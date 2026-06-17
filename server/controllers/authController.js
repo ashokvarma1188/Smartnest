@@ -39,8 +39,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// Login User
+
 // Login User
 const loginUser = async (req, res) => {
   try {
@@ -99,6 +98,6 @@ module.exports = {
   registerUser,
   loginUser,
 };
-=======
-module.exports = { registerUser };
->>>>>>> 16c9c240845283f7f5522adc898f552ab5711341
+
+
+
