@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SmartNest — Owner Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:        #0F2236;
+    --ink-deep:   #0A1928;
+    --line:       #4E7A9C;
+    --line-soft:  rgba(78,122,156,0.18);
+    --paper:      #F6F4EE;
+    --paper-card: #FFFFFF;
+    --paper-dim:  #E9E5D8;
+    --brass:      #C98A35;
+    --brass-dark: #A56F23;
+    --brass-soft: rgba(201,138,53,0.12);
+    --ok:         #4C7A5E;
+    --ok-soft:    rgba(76,122,94,0.12);
+    --err:        #B6493A;
+    --text-on-ink: #E8EEF3;
+    --text-muted-ink: #9FB6C9;
+    --text-dark:  #1B2430;
+    --text-muted-dark: #6B7280;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Space Grotesk', sans-serif;
+    color:var(--text-dark);
+    background:var(--paper);
+  }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeIn{
+    from{ opacity:0; } to{ opacity:1; }
+  }
+  @keyframes popIn{
+    from{ opacity:0; transform:scale(.94) translateY(10px); }
+    to{ opacity:1; transform:scale(1) translateY(0); }
+  }
+  @keyframes drawLine{
+    from{ stroke-dashoffset:140; } to{ stroke-dashoffset:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:30;
+    background:var(--ink);
+    color:var(--text-on-ink);
+    padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .wordmark{
+    display:flex; align-items:center; gap:10px;
+    font-size:15px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted-ink);
+  }
+  .wordmark .dot{ width:7px; height:7px; border-radius:50%; background:var(--brass); }
+
+  .topbar-right{ display:flex; align-items:center; gap:18px; }
+  .role-badge{
+    font-size:11.5px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--brass);
+    background:rgba(201,138,53,0.14);
+    border:1px solid rgba(201,138,53,0.3);
+    padding:4px 10px; border-radius:20px;
+  }
+  .user-chip{ display:flex; align-items:center; gap:10px; font-size:14px; }
+  .avatar{
+    width:32px; height:32px; border-radius:50%;
+    background:var(--brass); color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px;
+  }
+  .logout-btn{
+    background:none; border:1px solid rgba(255,255,255,0.18);
+    color:var(--text-muted-ink); font:inherit; font-size:13px;
+    padding:7px 14px; border-radius:7px; cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .logout-btn:hover{ border-color:var(--brass); color:var(--brass); }
+
+  /* ---------- HERO / WELCOME ---------- */
+  .hero{
+    position:relative;
+    background:
+      linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0/40px 40px,
+      var(--ink);
+    color:var(--text-on-ink);
+    padding:46px 32px 38px;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 85% 0%, rgba(78,122,156,0.28), transparent 55%);
+    pointer-events:none;
+  }
+  .hero-inner{ position:relative; z-index:2; max-width:1180px; margin:0 auto; }
+
+  .hero-greeting{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(28px, 3.4vw, 38px);
+    margin:0 0 6px;
+    opacity:0;
+    animation:fadeUp .6s ease forwards;
+  }
+  .hero-greeting em{ font-style:italic; color:var(--brass); }
+  .hero-sub{
+    font-size:14.5px; color:var(--text-muted-ink); margin:0 0 26px;
+    opacity:0; animation:fadeUp .6s ease .08s forwards;
+  }
+
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:14px;
+    max-width:680px;
+  }
+  .stat-card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px;
+    padding:16px 18px;
+    opacity:0; animation:fadeUp .6s ease forwards;
+  }
+  .stat-row .stat-card:nth-child(1){ animation-delay:.15s; }
+  .stat-row .stat-card:nth-child(2){ animation-delay:.22s; }
+  .stat-row .stat-card:nth-child(3){ animation-delay:.29s; }
+  .stat-num{
+    font-family:'Fraunces', serif; font-size:26px; font-weight:500;
+    color:#fff;
+  }
+  .stat-label{ font-size:12px; color:var(--text-muted-ink); margin-top:2px; letter-spacing:0.02em; }
+
+  /* ---------- MAIN ---------- */
+  main{ max-width:1180px; margin:0 auto; padding:36px 32px 80px; }
+
+  .section-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:22px;
+    flex-wrap:wrap; gap:14px;
+  }
+  .section-head h2{
+    font-family:'Fraunces', serif; font-weight:500; font-size:22px; margin:0;
+    color:var(--text-dark);
+  }
+  .section-head p{ margin:4px 0 0; font-size:13.5px; color:var(--text-muted-dark); }
+
+  .add-btn{
+    display:flex; align-items:center; gap:8px;
+    background:var(--ink); color:#fff;
+    border:none; border-radius:9px;
+    font:inherit; font-size:14.5px; font-weight:600;
+    padding:11px 18px; cursor:pointer;
+    transition:background .15s ease, transform .12s ease, box-shadow .15s ease;
+  }
+  .add-btn:hover{ background:var(--ink-deep); box-shadow:0 6px 18px rgba(15,34,54,0.25); }
+  .add-btn:active{ transform:translateY(1px); }
+  .add-btn svg{ width:16px; height:16px; }
+
+  /* ---------- PROPERTY GRID ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(270px, 1fr));
+    gap:20px;
+  }
+
+  .prop-card{
+    background:var(--paper-card);
+    border:1px solid var(--paper-dim);
+    border-radius:14px;
+    overflow:hidden;
+    opacity:0;
+    animation:fadeUp .55s ease forwards;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .prop-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 30px rgba(15,34,54,0.12);
+    border-color:rgba(201,138,53,0.4);
+  }
+
+  .prop-media{
+    height:160px;
+    background:linear-gradient(135deg, #1B3147, #0F2236);
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .prop-media svg{ width:54px; height:54px; opacity:.5; }
+  .prop-status{
+    position:absolute; top:10px; left:10px;
+    font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    padding:4px 9px; border-radius:20px;
+    background:var(--ok-soft); color:var(--ok);
+    border:1px solid rgba(76,122,94,0.3);
+  }
+
+  .prop-body{ padding:16px 18px 18px; }
+  .prop-title{ font-size:16px; font-weight:600; margin:0 0 4px; color:var(--text-dark); }
+  .prop-loc{
+    font-size:12.5px; color:var(--text-muted-dark);
+    display:flex; align-items:center; gap:5px; margin-bottom:12px;
+  }
+  .prop-loc svg{ width:12px; height:12px; flex-shrink:0; }
+
+  .prop-meta{
+    display:flex; align-items:center; justify-content:space-between;
+    border-top:1px solid var(--paper-dim); padding-top:12px;
+  }
+  .prop-price{ font-family:'Fraunces', serif; font-size:17px; font-weight:500; color:var(--brass-dark); }
+  .prop-actions{ display:flex; gap:8px; }
+  .icon-btn{
+    width:30px; height:30px; border-radius:7px;
+    border:1px solid var(--paper-dim); background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:border-color .15s ease, background .15s ease;
+  }
+  .icon-btn svg{ width:14px; height:14px; stroke:var(--text-muted-dark); }
+  .icon-btn:hover{ border-color:var(--brass); background:var(--brass-soft); }
+  .icon-btn:hover svg{ stroke:var(--brass-dark); }
+  .icon-btn.danger:hover{ border-color:var(--err); background:rgba(182,73,58,0.08); }
+  .icon-btn.danger:hover svg{ stroke:var(--err); }
+
+  /* ---------- EMPTY STATE ---------- */
+  .empty{
+    display:none;
+    text-align:center;
+    padding:64px 24px;
+    border:1.5px dashed var(--paper-dim);
+    border-radius:16px;
+    opacity:0; animation:fadeUp .5s ease forwards;
+  }
+  .empty svg{ width:46px; height:46px; stroke:var(--line); margin-bottom:14px; }
+  .empty h3{ font-family:'Fraunces', serif; font-weight:500; font-size:19px; margin:0 0 6px; }
+  .empty p{ font-size:13.5px; color:var(--text-muted-dark); margin:0 0 18px; }
+
+  /* ---------- SKELETON (loading) ---------- */
+  .skeleton-card{
+    background:var(--paper-card); border:1px solid var(--paper-dim);
+    border-radius:14px; overflow:hidden;
+  }
+  .sk{ background:linear-gradient(90deg, #EDEAE0 25%, #F6F4EE 37%, #EDEAE0 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .sk-media{ height:160px; }
+  .sk-line{ height:12px; border-radius:6px; margin:14px 18px; }
+  .sk-line.w60{ width:60%; }
+  .sk-line.w40{ width:40%; }
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(10,25,40,0.55);
+    backdrop-filter:blur(2px);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+    opacity:0; animation:fadeIn .2s ease forwards;
+  }
+  .overlay.show{ display:flex; }
+
+  .modal{
+    background:var(--paper-card);
+    border-radius:16px;
+    width:100%; max-width:520px;
+    max-height:90vh; overflow-y:auto;
+    padding:28px 28px 26px;
+    opacity:0; animation:popIn .25s cubic-bezier(.2,.9,.3,1.2) forwards;
+  }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:4px; }
+  .modal-head h3{ font-family:'Fraunces', serif; font-weight:500; font-size:21px; margin:0; }
+  .modal-head p{ font-size:13px; color:var(--text-muted-dark); margin:4px 0 22px; }
+  .close-x{
+    background:none; border:none; cursor:pointer; color:var(--text-muted-dark);
+    width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+    border-radius:7px; transition:background .15s ease;
+  }
+  .close-x:hover{ background:var(--paper-dim); }
+  .close-x svg{ width:16px; height:16px; }
+
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .field{ margin-bottom:15px; }
+  .field label{
+    display:block; font-size:12px; font-weight:600; letter-spacing:0.04em;
+    text-transform:uppercase; color:var(--text-muted-dark); margin-bottom:6px;
+  }
+  .input-shell{
+    border:1.5px solid var(--paper-dim); background:#fff; border-radius:8px;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .input-shell:focus-within{ border-color:var(--brass); box-shadow:0 0 0 3px rgba(201,138,53,0.15); }
+  .field input, .field textarea{
+    width:100%; border:none; background:transparent; outline:none;
+    font:inherit; font-size:14.5px; padding:11px 13px; color:var(--text-dark);
+    resize:vertical;
+  }
+
+  .modal-actions{ display:flex; gap:10px; margin-top:8px; }
+  .btn-secondary{
+    flex:1; background:#fff; border:1.5px solid var(--paper-dim); color:var(--text-dark);
+    font:inherit; font-size:14.5px; font-weight:600; padding:11px; border-radius:9px; cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .btn-secondary:hover{ border-color:var(--text-muted-dark); }
+  .btn-primary{
+    flex:1.4; background:var(--ink); color:#fff; border:none;
+    font:inherit; font-size:14.5px; font-weight:600; padding:11px; border-radius:9px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    transition:background .15s ease;
+  }
+  .btn-primary:hover{ background:var(--ink-deep); }
+  .btn-primary:disabled{ opacity:.65; cursor:not-allowed; }
+
+  .modal-status{
+    margin-top:14px; font-size:13px; border-radius:7px; padding:9px 11px; display:none; line-height:1.4;
+  }
+  .modal-status.show{ display:block; }
+  .modal-status.error{ background:rgba(182,73,58,0.1); color:var(--err); border:1px solid rgba(182,73,58,0.25); }
+
+  @media (max-width:560px){
+    .form-row{ grid-template-columns:1fr; }
+    .stat-row{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="wordmark"><span class="dot"></span> SmartNest</div>
+    <div class="topbar-right">
+      <span class="role-badge">Owner</span>
+      <div class="user-chip">
+        <div class="avatar" id="avatarInitial">A</div>
+        <span id="userName">Owner</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 class="hero-greeting">Welcome back, <em id="greetName">Owner</em></h1>
+      <p class="hero-sub">Here's what's live on SmartNest right now — no broker keeping you out of the loop.</p>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-label">Properties listed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statActive">0</div>
+          <div class="stat-label">Active listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statViews">0</div>
+          <div class="stat-label">Total enquiries</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main>
+    <div class="section-head">
+      <div>
+        <h2>My Properties</h2>
+        <p>Every listing you own, in one place.</p>
+      </div>
+      <button class="add-btn" id="openModalBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Property
+      </button>
+    </div>
+
+    <!-- loading skeletons -->
+    <div class="grid" id="skeletonGrid">
+      <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+      <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+      <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+    </div>
+
+    <!-- property cards render here -->
+    <div class="grid" id="propGrid" style="display:none;"></div>
+
+    <!-- empty state -->
+    <div class="empty" id="emptyState">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>
+      <h3>No properties yet</h3>
+      <p>List your first property and buyers can find it directly — no broker in between.</p>
+      <button class="add-btn" id="emptyAddBtn" style="margin:0 auto;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add your first property
+      </button>
+    </div>
+  </main>
+
+  <!-- ADD PROPERTY MODAL -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3>Add a property</h3>
+          <p>This goes straight onto SmartNest — buyers see it as soon as you save.</p>
+        </div>
+        <button class="close-x" id="closeModalBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </div>
+
+      <form id="propertyForm" novalidate>
+        <div class="field">
+          <label for="ptitle">Title</label>
+          <div class="input-shell"><input type="text" id="ptitle" placeholder="e.g. 2BHK near Gachibowli" required /></div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="pprice">Price (₹)</label>
+            <div class="input-shell"><input type="number" id="pprice" placeholder="4500000" required /></div>
+          </div>
+          <div class="field">
+            <label for="plocation">Location</label>
+            <div class="input-shell"><input type="text" id="plocation" placeholder="Hyderabad" required /></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="pbedrooms">Bedrooms</label>
+            <div class="input-shell"><input type="number" id="pbedrooms" placeholder="2" min="0" /></div>
+          </div>
+          <div class="field">
+            <label for="parea">Area (sq.ft)</label>
+            <div class="input-shell"><input type="number" id="parea" placeholder="1100" min="0" /></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="pdesc">Description</label>
+          <div class="input-shell"><textarea id="pdesc" rows="3" placeholder="A short, honest description of the place"></textarea></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span id="saveLabel">Save property</span>
+          </button>
+        </div>
+
+        <div class="modal-status" id="modalStatus"></div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  // ---- backend base — change once deployed ----
+  const API_BASE = "http://localhost:5000/api";
+
+  const token = localStorage.getItem('smartnest_token') || sessionStorage.getItem('smartnest_token');
+  const userRaw = localStorage.getItem('smartnest_user') || sessionStorage.getItem('smartnest_user');
+  const user = userRaw ? JSON.parse(userRaw) : null;
+
+  // guard: only logged-in owners get past this point
+  if (!token || !user || user.role !== 'owner') {
+    window.location.href = "login.html";
+  }
+
+  document.getElementById('userName').textContent = user.name || "Owner";
+  document.getElementById('greetName').textContent = (user.name || "Owner").split(' ')[0];
+  document.getElementById('avatarInitial').textContent = (user.name || "O").charAt(0).toUpperCase();
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('smartnest_token');
+    localStorage.removeItem('smartnest_user');
+    sessionStorage.removeItem('smartnest_token');
+    sessionStorage.removeItem('smartnest_user');
+    window.location.href = "login.html";
+  });
+
+  const grid          = document.getElementById('propGrid');
+  const skeletonGrid   = document.getElementById('skeletonGrid');
+  const emptyState     = document.getElementById('emptyState');
+  const statTotal      = document.getElementById('statTotal');
+  const statActive     = document.getElementById('statActive');
+  const statViews      = document.getElementById('statViews');
+
+  function houseIconSVG(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="#9FB6C9" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>`;
+  }
+  function pinIconSVG(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+  }
+
+  function renderProperties(list){
+    skeletonGrid.style.display = 'none';
+
+    if (!list || list.length === 0){
+      grid.style.display = 'none';
+      emptyState.style.display = 'block';
+      statTotal.textContent = 0;
+      statActive.textContent = 0;
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.style.display = 'grid';
+    grid.innerHTML = '';
+
+    list.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'prop-card';
+      card.style.animationDelay = `${i * 0.06}s`;
+      card.innerHTML = `
+        <div class="prop-media">
+          <span class="prop-status">${p.status || 'Active'}</span>
+          ${houseIconSVG()}
+        </div>
+        <div class="prop-body">
+          <div class="prop-title">${p.title || 'Untitled property'}</div>
+          <div class="prop-loc">${pinIconSVG()} ${p.location || 'Location not set'}</div>
+          <div class="prop-meta">
+            <div class="prop-price">₹${Number(p.price || 0).toLocaleString('en-IN')}</div>
+            <div class="prop-actions">
+              <button class="icon-btn" title="Edit" data-id="${p._id}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              </button>
+              <button class="icon-btn danger" title="Delete" data-id="${p._id}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+
+      card.querySelector('.icon-btn.danger').addEventListener('click', () => deleteProperty(p._id, card));
+      card.querySelector('.icon-btn:not(.danger)').addEventListener('click', () => {
+        // hook this up to an edit flow whenever you build one
+        alert('Hook this button up to your edit-property page or modal.');
+      });
+    });
+
+    statTotal.textContent = list.length;
+    statActive.textContent = list.filter(p => (p.status || 'Active').toLowerCase() === 'active').length;
+    statViews.textContent = list.reduce((sum, p) => sum + (p.enquiries || 0), 0);
+  }
+
+  async function loadProperties(){
+    try{
+      const res = await fetch(`${API_BASE}/properties/owner`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Couldn't load your properties.");
+      renderProperties(data.properties || data || []);
+    } catch (err){
+      skeletonGrid.style.display = 'none';
+      // fall back to an empty state rather than a dead screen
+      renderProperties([]);
+      console.error(err);
+    }
+  }
+
+  loadProperties();
+
+  // ---------- modal open / close ----------
+  const overlay = document.getElementById('overlay');
+  function openModal(){
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+    document.getElementById('propertyForm').reset();
+    document.getElementById('modalStatus').className = 'modal-status';
+  }
+  document.getElementById('openModalBtn').addEventListener('click', openModal);
+  document.getElementById('emptyAddBtn').addEventListener('click', openModal);
+  document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+  document.getElementById('cancelBtn').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
+
+  // ---------- add property submit ----------
+  const propertyForm = document.getElementById('propertyForm');
+  const saveBtn       = document.getElementById('saveBtn');
+  const saveLabel     = document.getElementById('saveLabel');
+  const modalStatus   = document.getElementById('modalStatus');
+
+  propertyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    modalStatus.className = 'modal-status';
+
+    const payload = {
+      title: document.getElementById('ptitle').value.trim(),
+      price: Number(document.getElementById('pprice').value),
+      location: document.getElementById('plocation').value.trim(),
+      bedrooms: Number(document.getElementById('pbedrooms').value) || 0,
+      area: Number(document.getElementById('parea').value) || 0,
+      description: document.getElementById('pdesc').value.trim()
+    };
+
+    if (!payload.title || !payload.price || !payload.location){
+      modalStatus.textContent = "Title, price, and location are required.";
+      modalStatus.className = 'modal-status show error';
+      return;
+    }
+
+    saveBtn.disabled = true;
+    saveLabel.textContent = "Saving…";
+
+    try{
+      const res = await fetch(`${API_BASE}/properties`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Couldn't save the property.");
+
+      closeModal();
+      loadProperties();
+    } catch (err){
+      modalStatus.textContent = err.message;
+      modalStatus.className = 'modal-status show error';
+    } finally{
+      saveBtn.disabled = false;
+      saveLabel.textContent = "Save property";
+    }
+  });
+
+  // ---------- delete ----------
+  async function deleteProperty(id, cardEl){
+    if (!confirm("Remove this property from SmartNest?")) return;
+    try{
+      const res = await fetch(`${API_BASE}/properties/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok){
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Couldn't delete this property.");
+      }
+      cardEl.style.transition = 'opacity .25s ease, transform .25s ease';
+      cardEl.style.opacity = '0';
+      cardEl.style.transform = 'scale(.95)';
+      setTimeout(() => { cardEl.remove(); loadProperties(); }, 220);
+    } catch (err){
+      alert(err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
