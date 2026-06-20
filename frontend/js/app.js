@@ -1,7 +1,7 @@
 console.log("app.js loaded");
 const propertyContainer = document.getElementById("property-container");
 
-async function fetchProperties() {
+async function fetchProperties(){
   try {
     const response = await fetch(
       "http://localhost:4000/api/property/all"
