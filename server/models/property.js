@@ -9,7 +9,6 @@ const propertySchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: true,
     },
 
     price: {
@@ -29,7 +28,14 @@ const propertySchema = new mongoose.Schema(
 
     bathrooms: {
       type: Number,
-      required: true,
+    },
+
+    area: {
+      type: Number,
+    },
+
+    image: {
+      type: String,
     },
 
     owner: {
