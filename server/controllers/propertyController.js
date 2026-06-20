@@ -10,15 +10,19 @@ const addProperty = async (req, res) => {
       location,
       bedrooms,
       bathrooms,
+      area,
     } = req.body;
 
     const property = await Property.create({
       title,
       description,
-      price,
+      price:    Number(price),
       location,
-      bedrooms,
-      bathrooms,
+      bedrooms: Number(bedrooms) || 0,
+      bathrooms:Number(bathrooms) || 0,
+      area:     Number(area) || 0,
+      image:    req.file ? `/uploads/${req.file.filename}` : null,
+      owner:    req.user.id,
     });
 
     res.status(201).json({
@@ -38,7 +42,7 @@ const addProperty = async (req, res) => {
 // GET ALL PROPERTIES
 const getAllProperties = async (req, res) => {
   try {
-    const properties = await Property.find();
+    const properties = await Property.find().populate('owner', 'name email');
 
     res.status(200).json({
       success: true,
@@ -84,9 +88,19 @@ const getPropertyById = async (req, res) => {
 // UPDATE PROPERTY
 const updateProperty = async (req, res) => {
   try {
+    const updateData = {
+      title:       req.body.title,
+      description: req.body.description,
+      price:       Number(req.body.price),
+      location:    req.body.location,
+      bedrooms:    Number(req.body.bedrooms) || 0,
+      area:        Number(req.body.area) || 0,
+    };
+    if (req.file) updateData.image = `/uploads/${req.file.filename}`;
+
     const property = await Property.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       {
         new: true,
       }

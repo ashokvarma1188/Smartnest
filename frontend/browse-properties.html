@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SmartNest — Browse Properties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:        #0F2236;
+    --ink-deep:   #0A1928;
+    --line:       #4E7A9C;
+    --line-soft:  rgba(78,122,156,0.18);
+    --paper:      #F6F4EE;
+    --paper-card: #FFFFFF;
+    --paper-dim:  #E9E5D8;
+    --brass:      #C98A35;
+    --brass-dark: #A56F23;
+    --brass-soft: rgba(201,138,53,0.12);
+    --ok:         #4C7A5E;
+    --ok-soft:    rgba(76,122,94,0.12);
+    --err:        #B6493A;
+    --text-on-ink: #E8EEF3;
+    --text-muted-ink: #9FB6C9;
+    --text-dark:  #1B2430;
+    --text-muted-dark: #6B7280;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Space Grotesk', sans-serif;
+    color:var(--text-dark);
+    background:var(--paper);
+  }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes shimmer{
+    0%{ background-position:100% 0; }
+    100%{ background-position:0 0; }
+  }
+
+  /* TOPBAR */
+  .topbar{
+    position:sticky; top:0; z-index:30;
+    background:var(--ink);
+    color:var(--text-on-ink);
+    padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .wordmark{
+    display:flex; align-items:center; gap:10px;
+    font-size:15px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted-ink);
+  }
+  .wordmark .dot{ width:7px; height:7px; border-radius:50%; background:var(--brass); }
+
+  .topbar-right{ display:flex; align-items:center; gap:18px; }
+  .role-badge{
+    font-size:11.5px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--line);
+    background:rgba(78,122,156,0.14);
+    border:1px solid rgba(78,122,156,0.3);
+    padding:4px 10px; border-radius:20px;
+  }
+  .user-chip{ display:flex; align-items:center; gap:10px; font-size:14px; }
+  .avatar{
+    width:32px; height:32px; border-radius:50%;
+    background:var(--line); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px;
+  }
+  .logout-btn{
+    background:none; border:1px solid rgba(255,255,255,0.18);
+    color:var(--text-muted-ink); font:inherit; font-size:13px;
+    padding:7px 14px; border-radius:7px; cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .logout-btn:hover{ border-color:var(--brass); color:var(--brass); }
+
+  /* HERO */
+  .hero{
+    position:relative;
+    background:
+      linear-gradient(var(--line-soft) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px) 0 0/40px 40px,
+      var(--ink);
+    color:var(--text-on-ink);
+    padding:46px 32px 38px;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 85% 0%, rgba(78,122,156,0.28), transparent 55%);
+    pointer-events:none;
+  }
+  .hero-inner{ position:relative; z-index:2; max-width:1180px; margin:0 auto; }
+
+  .hero-title{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(28px, 3.4vw, 38px);
+    margin:0 0 6px;
+    opacity:0; animation:fadeUp .6s ease forwards;
+  }
+  .hero-title em{ font-style:italic; color:var(--brass); }
+  .hero-sub{
+    font-size:14.5px; color:var(--text-muted-ink); margin:0 0 26px;
+    opacity:0; animation:fadeUp .6s ease .08s forwards;
+  }
+
+  /* SEARCH BAR */
+  .search-bar{
+    display:flex; gap:10px; max-width:560px;
+    opacity:0; animation:fadeUp .6s ease .15s forwards;
+  }
+  .search-bar input{
+    flex:1;
+    border:1.5px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.07);
+    color:#fff;
+    font:inherit; font-size:14.5px;
+    padding:11px 16px; border-radius:8px; outline:none;
+    transition:border-color .15s ease;
+  }
+  .search-bar input::placeholder{ color:var(--text-muted-ink); }
+  .search-bar input:focus{ border-color:var(--brass); }
+  .search-btn{
+    background:var(--brass); color:var(--ink);
+    border:none; border-radius:8px;
+    font:inherit; font-size:14px; font-weight:700;
+    padding:11px 20px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .search-btn:hover{ background:var(--brass-dark); color:#fff; }
+
+  /* MAIN */
+  main{ max-width:1180px; margin:0 auto; padding:36px 32px 80px; }
+
+  .section-head{ margin-bottom:22px; }
+  .section-head h2{
+    font-family:'Fraunces', serif; font-weight:500; font-size:22px; margin:0 0 4px;
+    color:var(--text-dark);
+  }
+  .section-head p{ margin:0; font-size:13.5px; color:var(--text-muted-dark); }
+
+  /* GRID */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
+    gap:22px;
+  }
+
+  /* PROPERTY CARD */
+  .prop-card{
+    background:var(--paper-card);
+    border:1px solid var(--paper-dim);
+    border-radius:14px;
+    overflow:hidden;
+    opacity:0; animation:fadeUp .55s ease forwards;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .prop-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 30px rgba(15,34,54,0.12);
+    border-color:rgba(201,138,53,0.4);
+  }
+
+  .prop-media{
+    height:170px;
+    background:linear-gradient(135deg, #1B3147, #0F2236);
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .prop-media svg{ width:54px; height:54px; opacity:.45; }
+  .prop-type{
+    position:absolute; top:10px; left:10px;
+    font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    padding:4px 9px; border-radius:20px;
+    background:var(--ok-soft); color:var(--ok);
+    border:1px solid rgba(76,122,94,0.3);
+  }
+
+  .prop-body{ padding:18px 18px 16px; }
+  .prop-title{ font-size:16px; font-weight:600; margin:0 0 5px; color:var(--text-dark); }
+  .prop-loc{
+    font-size:12.5px; color:var(--text-muted-dark);
+    display:flex; align-items:center; gap:5px; margin-bottom:12px;
+  }
+  .prop-loc svg{ width:12px; height:12px; flex-shrink:0; }
+
+  .prop-chips{
+    display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+  }
+  .chip{
+    font-size:11.5px; color:var(--text-muted-dark);
+    background:var(--paper); border:1px solid var(--paper-dim);
+    padding:3px 9px; border-radius:20px;
+    display:flex; align-items:center; gap:4px;
+  }
+
+  .prop-footer{
+    display:flex; align-items:center; justify-content:space-between;
+    border-top:1px solid var(--paper-dim); padding-top:14px;
+  }
+  .prop-price{ font-family:'Fraunces', serif; font-size:18px; font-weight:500; color:var(--brass-dark); }
+  .contact-btn{
+    background:var(--ink); color:#fff;
+    border:none; border-radius:8px;
+    font:inherit; font-size:13px; font-weight:600;
+    padding:8px 14px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .contact-btn:hover{ background:var(--ink-deep); }
+
+  /* SKELETON */
+  .skeleton-card{
+    background:var(--paper-card); border:1px solid var(--paper-dim); border-radius:14px; overflow:hidden;
+  }
+  .sk{ background:linear-gradient(90deg, #EDEAE0 25%, #F6F4EE 37%, #EDEAE0 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  .sk-media{ height:170px; }
+  .sk-line{ height:12px; border-radius:6px; margin:14px 18px; }
+  .sk-line.w70{ width:70%; }
+  .sk-line.w45{ width:45%; }
+
+  /* EMPTY */
+  .empty{
+    display:none; text-align:center; padding:64px 24px;
+    border:1.5px dashed var(--paper-dim); border-radius:16px;
+  }
+  .empty svg{ width:46px; height:46px; stroke:var(--line); margin-bottom:14px; }
+  .empty h3{ font-family:'Fraunces', serif; font-weight:500; font-size:19px; margin:0 0 6px; }
+  .empty p{ font-size:13.5px; color:var(--text-muted-dark); margin:0; }
+
+  /* MODAL (contact owner) */
+  .overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(10,25,40,0.55);
+    backdrop-filter:blur(2px);
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background:var(--paper-card); border-radius:16px;
+    width:100%; max-width:440px; padding:28px;
+  }
+  .modal-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; }
+  .modal-head h3{ font-family:'Fraunces', serif; font-weight:500; font-size:21px; margin:0; }
+  .close-x{
+    background:none; border:none; cursor:pointer; color:var(--text-muted-dark);
+    width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+    border-radius:7px; transition:background .15s ease;
+  }
+  .close-x:hover{ background:var(--paper-dim); }
+  .close-x svg{ width:16px; height:16px; }
+  .detail-row{ display:flex; flex-direction:column; gap:10px; }
+  .detail-item{
+    display:flex; align-items:center; gap:12px;
+    background:var(--paper); border:1px solid var(--paper-dim);
+    border-radius:8px; padding:12px 14px;
+    font-size:14px;
+  }
+  .detail-item svg{ width:16px; height:16px; stroke:var(--line); flex-shrink:0; }
+  .detail-label{ font-size:11px; color:var(--text-muted-dark); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:2px; }
+  .detail-value{ font-weight:600; color:var(--text-dark); }
+  .modal-note{ margin-top:14px; font-size:12.5px; color:var(--text-muted-dark); line-height:1.5; }
+
+  @media (max-width:600px){
+    .topbar{ padding:14px 18px; }
+    main{ padding:28px 18px 60px; }
+    .hero{ padding:34px 18px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="wordmark"><span class="dot"></span> SmartNest</div>
+  <div class="topbar-right">
+    <span class="role-badge">Buyer</span>
+    <div class="user-chip">
+      <div class="avatar" id="avatarInitial">B</div>
+      <span id="userName">Buyer</span>
+    </div>
+    <button class="logout-btn" id="logoutBtn">Log out</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title">Find your home — <em>no broker</em> between you and the owner.</h1>
+    <p class="hero-sub">Every listing below is posted directly by the owner. Contact them straight — zero commission.</p>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by title or location…" />
+      <button class="search-btn" id="searchBtn">Search</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="section-head">
+    <h2>All Properties</h2>
+    <p id="resultCount">Loading properties…</p>
+  </div>
+
+  <!-- skeletons -->
+  <div class="grid" id="skeletonGrid">
+    <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w70"></div><div class="sk sk-line w45"></div></div>
+    <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w70"></div><div class="sk sk-line w45"></div></div>
+    <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w70"></div><div class="sk sk-line w45"></div></div>
+  </div>
+
+  <!-- property cards -->
+  <div class="grid" id="propGrid" style="display:none;"></div>
+
+  <!-- empty -->
+  <div class="empty" id="emptyState">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>
+    <h3>No properties yet</h3>
+    <p>Owners haven't listed anything yet. Check back soon.</p>
+  </div>
+</main>
+
+<!-- CONTACT MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Contact Owner</h3>
+      <button class="close-x" id="closeModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+
+    <div class="detail-row" id="contactDetails"></div>
+    <p class="modal-note">SmartNest connects you directly — no middleman, no commission. Reach out to the owner using the details above.</p>
+  </div>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:4000/api";
+
+  const token  = localStorage.getItem('smartnest_token')  || sessionStorage.getItem('smartnest_token');
+  const userRaw= localStorage.getItem('smartnest_user')   || sessionStorage.getItem('smartnest_user');
+  const user   = userRaw ? JSON.parse(userRaw) : null;
+
+  if (!token || !user) {
+    window.location.href = "login.html";
+  }
+
+  document.getElementById('userName').textContent     = user.name || "Buyer";
+  document.getElementById('avatarInitial').textContent= (user.name || "B").charAt(0).toUpperCase();
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "login.html";
+  });
+
+  let allProperties = [];
+
+  function houseIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="#9FB6C9" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>`;
+  }
+  function pinIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+  }
+
+  function renderCards(list){
+    document.getElementById('skeletonGrid').style.display = 'none';
+    const grid = document.getElementById('propGrid');
+    const empty= document.getElementById('emptyState');
+    const count= document.getElementById('resultCount');
+
+    if (!list || list.length === 0){
+      grid.style.display  = 'none';
+      empty.style.display = 'block';
+      count.textContent   = 'No properties found';
+      return;
+    }
+
+    empty.style.display = 'none';
+    grid.style.display  = 'grid';
+    grid.innerHTML      = '';
+    count.textContent   = `${list.length} propert${list.length === 1 ? 'y' : 'ies'} available`;
+
+    list.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'prop-card';
+      card.style.animationDelay = `${i * 0.06}s`;
+
+      const chips = [];
+      if (p.bedrooms) chips.push(`🛏 ${p.bedrooms} Bed`);
+      if (p.area)     chips.push(`📐 ${p.area} sq.ft`);
+
+      const imgUrl = p.image ? `http://localhost:4000${p.image}` : null;
+      card.innerHTML = `
+        <div class="prop-media" ${imgUrl ? `style="background-image:url('${imgUrl}');background-size:cover;background-position:center;"` : ''}>
+          <span class="prop-type">Active</span>
+          ${imgUrl ? '' : houseIcon()}
+        </div>
+        <div class="prop-body">
+          <div class="prop-title">${p.title || 'Untitled'}</div>
+          <div class="prop-loc">${pinIcon()} ${p.location || 'Location not set'}</div>
+          ${chips.length ? `<div class="prop-chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>` : ''}
+          <div class="prop-footer">
+            <div class="prop-price">₹${Number(p.price||0).toLocaleString('en-IN')}</div>
+            <button class="contact-btn" data-idx="${i}">Contact Owner</button>
+          </div>
+        </div>`;
+
+      card.querySelector('.contact-btn').addEventListener('click', () => openContact(p));
+      grid.appendChild(card);
+    });
+  }
+
+  async function loadProperties(){
+    try{
+      const res  = await fetch(`${API_BASE}/property/all`);
+      const data = await res.json();
+      allProperties = data.properties || data || [];
+      renderCards(allProperties);
+    } catch(err){
+      document.getElementById('skeletonGrid').style.display = 'none';
+      renderCards([]);
+      console.error(err);
+    }
+  }
+
+  loadProperties();
+
+  // search
+  document.getElementById('searchBtn').addEventListener('click', doSearch);
+  document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(); });
+
+  function doSearch(){
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (!q){ renderCards(allProperties); return; }
+    const filtered = allProperties.filter(p =>
+      (p.title    || '').toLowerCase().includes(q) ||
+      (p.location || '').toLowerCase().includes(q)
+    );
+    renderCards(filtered);
+  }
+
+  // contact modal
+  const overlay = document.getElementById('overlay');
+  document.getElementById('closeModal').addEventListener('click', () => overlay.classList.remove('show'));
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('show'); });
+
+  function openContact(p){
+    document.getElementById('contactDetails').innerHTML = `
+      <div class="detail-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <div><div class="detail-label">Property</div><div class="detail-value">${p.title || 'N/A'}</div></div>
+      </div>
+      <div class="detail-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <div><div class="detail-label">Location</div><div class="detail-value">${p.location || 'N/A'}</div></div>
+      </div>
+      <div class="detail-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <div><div class="detail-label">Price</div><div class="detail-value">₹${Number(p.price||0).toLocaleString('en-IN')}</div></div>
+      </div>
+      <div class="detail-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div><div class="detail-label">Owner Name</div><div class="detail-value">${p.owner?.name || 'Not available'}</div></div>
+      </div>
+      <div class="detail-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <div><div class="detail-label">Owner Email</div><div class="detail-value">${p.owner?.email || 'Not available'}</div></div>
+      </div>`;
+    overlay.classList.add('show');
+  }
+</script>
+
+</body>
+</html>

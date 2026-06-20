@@ -317,7 +317,7 @@
   <div class="panel">
     <div class="card">
       <h1>Welcome back</h1>
-      <p class="lede">New to SmartNest? <a href="signup.html">Create an account</a></p>
+      <p class="lede">New to SmartNest? <a href="register.html">Create an account</a></p>
 
       <form id="loginForm" novalidate>
         <div class="field">
@@ -340,7 +340,7 @@
             <input type="checkbox" id="remember" />
             Keep me signed in
           </label>
-          <a href="#">Forgot password?</a>
+          <a href="forgot-password.html">Forgot password?</a>
         </div>
 
         <button type="submit" class="submit" id="submitBtn">
@@ -423,7 +423,7 @@ const API_BASE = "http://localhost:4000/api";
 
       setTimeout(() => {
         window.location.href = data.user?.role === 'owner'
-          ? 'owner-dashboard.html'
+          ? 'add-property.html'
           : 'browse-properties.html';
       }, 600);
 

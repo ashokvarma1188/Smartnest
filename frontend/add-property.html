@@ -458,6 +458,14 @@
           <div class="input-shell"><textarea id="pdesc" rows="3" placeholder="A short, honest description of the place"></textarea></div>
         </div>
 
+        <div class="field">
+          <label for="pimage">Property Photo</label>
+          <div class="input-shell" style="padding:8px 13px;">
+            <input type="file" id="pimage" accept="image/*" style="font:inherit;font-size:13.5px;width:100%;border:none;background:transparent;outline:none;" />
+          </div>
+          <img id="imagePreview" src="" alt="" style="display:none;margin-top:8px;width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--paper-dim);" />
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
           <button type="submit" class="btn-primary" id="saveBtn">
@@ -473,7 +481,8 @@
 
 <script>
   // ---- backend base — change once deployed ----
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = "http://localhost:4000/api";
+  let editingId = null;
 
   const token = localStorage.getItem('smartnest_token') || sessionStorage.getItem('smartnest_token');
   const userRaw = localStorage.getItem('smartnest_user') || sessionStorage.getItem('smartnest_user');
@@ -529,10 +538,11 @@
       const card = document.createElement('div');
       card.className = 'prop-card';
       card.style.animationDelay = `${i * 0.06}s`;
+      const imgUrl = p.image ? `http://localhost:4000${p.image}` : null;
       card.innerHTML = `
-        <div class="prop-media">
+        <div class="prop-media" ${imgUrl ? `style="background-image:url('${imgUrl}');background-size:cover;background-position:center;"` : ''}>
           <span class="prop-status">${p.status || 'Active'}</span>
-          ${houseIconSVG()}
+          ${imgUrl ? '' : houseIconSVG()}
         </div>
         <div class="prop-body">
           <div class="prop-title">${p.title || 'Untitled property'}</div>
@@ -553,8 +563,17 @@
 
       card.querySelector('.icon-btn.danger').addEventListener('click', () => deleteProperty(p._id, card));
       card.querySelector('.icon-btn:not(.danger)').addEventListener('click', () => {
-        // hook this up to an edit flow whenever you build one
-        alert('Hook this button up to your edit-property page or modal.');
+        editingId = p._id;
+        document.getElementById('ptitle').value    = p.title       || '';
+        document.getElementById('pprice').value    = p.price       || '';
+        document.getElementById('plocation').value = p.location    || '';
+        document.getElementById('pbedrooms').value = p.bedrooms    || '';
+        document.getElementById('parea').value     = p.area        || '';
+        document.getElementById('pdesc').value     = p.description || '';
+        document.querySelector('.modal-head h3').textContent = 'Edit property';
+        document.querySelector('.modal-head p').textContent  = 'Change what you need and hit Update.';
+        document.getElementById('saveLabel').textContent     = 'Update property';
+        openModal();
       });
     });
 
@@ -565,7 +584,7 @@
 
   async function loadProperties(){
     try{
-      const res = await fetch(`${API_BASE}/properties/owner`, {
+      const res = await fetch(`${API_BASE}/property/all`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
@@ -592,6 +611,10 @@
     document.body.style.overflow = '';
     document.getElementById('propertyForm').reset();
     document.getElementById('modalStatus').className = 'modal-status';
+    editingId = null;
+    document.querySelector('.modal-head h3').textContent = 'Add a property';
+    document.querySelector('.modal-head p').textContent  = 'This goes straight onto SmartNest — buyers see it as soon as you save.';
+    document.getElementById('saveLabel').textContent     = 'Save property';
   }
   document.getElementById('openModalBtn').addEventListener('click', openModal);
   document.getElementById('emptyAddBtn').addEventListener('click', openModal);
@@ -599,6 +622,18 @@
   document.getElementById('cancelBtn').addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
+
+  // ---------- image preview ----------
+  document.getElementById('pimage').addEventListener('change', function(){
+    const file = this.files[0];
+    const preview = document.getElementById('imagePreview');
+    if (file){
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+  });
 
   // ---------- add property submit ----------
   const propertyForm = document.getElementById('propertyForm');
@@ -629,13 +664,23 @@
     saveLabel.textContent = "Saving…";
 
     try{
-      const res = await fetch(`${API_BASE}/properties`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
+      const url    = editingId ? `${API_BASE}/property/${editingId}` : `${API_BASE}/property/add`;
+      const method = editingId ? 'PUT' : 'POST';
+
+      const formData = new FormData();
+      formData.append('title',       payload.title);
+      formData.append('price',       payload.price);
+      formData.append('location',    payload.location);
+      formData.append('bedrooms',    payload.bedrooms);
+      formData.append('area',        payload.area);
+      formData.append('description', payload.description);
+      const imageFile = document.getElementById('pimage').files[0];
+      if (imageFile) formData.append('image', imageFile);
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formData
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Couldn't save the property.");
@@ -647,7 +692,7 @@
       modalStatus.className = 'modal-status show error';
     } finally{
       saveBtn.disabled = false;
-      saveLabel.textContent = "Save property";
+      saveLabel.textContent = editingId ? "Update property" : "Save property";
     }
   });
 
@@ -655,7 +700,7 @@
   async function deleteProperty(id, cardEl){
     if (!confirm("Remove this property from SmartNest?")) return;
     try{
-      const res = await fetch(`${API_BASE}/properties/${id}`, {
+      const res = await fetch(`${API_BASE}/property/${id}`,{
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
