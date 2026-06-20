@@ -1,256 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SmartNest — Copy README</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400&display=swap');
-:root{
-  --ground:#0F2236;
-  --text:#E8EEF3;
-  --accent:#C98A35;
-  --muted:rgba(232,238,243,0.5);
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{
-  font-family:'Space Grotesk',sans-serif;
-  background:var(--ground);color:var(--text);
-  min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;
-  padding:60px 24px 48px;gap:32px;
-}
-.label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;}
-h1{font-size:28px;font-weight:700;margin-bottom:8px;text-align:center;}
-p.sub{font-size:14px;color:var(--muted);line-height:1.6;text-align:center;}
-.copy-btn{
-  background:var(--accent);color:#0F2236;
-  border:none;border-radius:12px;
-  font-family:'Space Grotesk',sans-serif;
-  font-size:18px;font-weight:700;
-  padding:20px 48px;cursor:pointer;
-  display:flex;align-items:center;gap:12px;
-  transition:transform .15s,box-shadow .15s,background .15s;
-  box-shadow:0 8px 32px rgba(201,138,53,0.35);
-}
-.copy-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(201,138,53,0.45);}
-.copy-btn:active{transform:translateY(0);}
-.copy-btn.done{background:#3D7A57;color:#fff;box-shadow:0 8px 32px rgba(61,122,87,0.4);}
-.hint{font-size:12.5px;color:var(--muted);text-align:center;}
-.preview-box{
-  width:100%;max-width:760px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:12px;padding:24px;
-  font-family:'JetBrains Mono',monospace;
-  font-size:12px;color:rgba(168,196,216,0.75);
-  line-height:1.7;max-height:340px;overflow-y:auto;
-  white-space:pre-wrap;word-break:break-word;
-}
-</style>
-</head>
-<body>
+# 🏠 SmartNest — Direct Property, No Broker
 
-<div>
-  <div class="label"><span class="dot"></span> SmartNest · README</div>
-  <h1>One click. Full README copied.</h1>
-  <p class="sub">Click the button — then paste into your GitHub README.md file.</p>
-</div>
+> A full-stack real estate platform where owners list directly and buyers connect — no broker, no commission, no middleman.
 
-<button class="copy-btn" id="btn" onclick="copyIt()">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-  Copy Full README
-</button>
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 
-<p class="hint">After copying → GitHub → open README.md → Ctrl+A → Ctrl+V → Commit changes</p>
+---
 
-<div class="preview-box" id="preview"></div>
+## 💡 The Problem SmartNest Solves
 
-<script>
-var README = [
-"# 🏠 SmartNest — Direct Property, No Broker",
-"",
-"> A full-stack real estate platform where owners list directly and buyers connect — no broker, no commission, no middleman.",
-"",
-"![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)",
-"![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)",
-"![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)",
-"![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)",
-"",
-"---",
-"",
-"## 💡 The Problem SmartNest Solves",
-"",
-"In India, buying or renting a property usually means dealing with a broker who stands between owner and buyer — and charges commission from both sides.",
-"",
-"| Without SmartNest | With SmartNest |",
-"|---|---|",
-"| Owner → Broker → Buyer | Owner → Buyer (Direct) |",
-"| Owner pays commission | Zero commission |",
-"| Buyer pays extra money | Buyer pays only property price |",
-"| Broker controls information | Full transparency |",
-"",
-"**SmartNest removes the broker completely.**",
-"",
-"---",
-"",
-"## ✨ Features",
-"",
-"### For Property Owners",
-"- 🔐 Secure Register and Login with JWT Authentication",
-"- 🏡 Add Properties with title, price, location, bedrooms, area, description, and photo",
-"- ✏️ Edit Property details anytime",
-"- 🗑️ Delete Property listings",
-"- 📊 Owner Dashboard showing all listings at a glance",
-"",
-"### For Buyers",
-"- 🔍 Browse All Properties in one clean page",
-"- 🔎 Live Search by title or location",
-"- 📞 Contact Owner Directly — see real owner name and email, no broker involved",
-"",
-"### Security",
-"- 🔑 JWT-based authentication",
-"- 🛡️ Protected routes — only logged-in owners can add, edit, delete",
-"- 🔒 Forgot Password — reset password with email",
-"- 🧂 Passwords hashed with bcrypt",
-"",
-"### Extra",
-"- 📸 Photo Upload for each property",
-"- 👤 Role-based access — Owner dashboard vs Buyer browse page",
-"",
-"---",
-"",
-"## 🛠️ Tech Stack",
-"",
-"| Layer | Technology |",
-"|---|---|",
-"| Frontend | HTML5, CSS3, Vanilla JavaScript |",
-"| Backend | Node.js, Express.js |",
-"| Database | MongoDB Atlas |",
-"| Authentication | JWT (JSON Web Tokens) |",
-"| Password Hashing | bcryptjs |",
-"| File Upload | Multer |",
-"",
-"---",
-"",
-"## 📁 Project Structure",
-"",
-"    SmartNest/",
-"    ├── frontend/",
-"    │   ├── index.html",
-"    │   ├── login.html",
-"    │   ├── register.html",
-"    │   ├── forgot-password.html",
-"    │   ├── add-property.html",
-"    │   └── browse-properties.html",
-"    │",
-"    └── server/",
-"        ├── server.js",
-"        ├── config/db.js",
-"        ├── models/",
-"        │   ├── user.js",
-"        │   └── property.js",
-"        ├── controllers/",
-"        │   ├── authController.js",
-"        │   └── propertyController.js",
-"        ├── middleware/",
-"        │   └── authMiddleware.js",
-"        ├── routes/",
-"        │   ├── authRoutes.js",
-"        │   └── propertyRoutes.js",
-"        └── uploads/",
-"",
-"---",
-"",
-"## 🔌 API Endpoints",
-"",
-"### Auth",
-"| Method | Endpoint | Description |",
-"|---|---|---|",
-"| POST | `/api/auth/register` | Register new user |",
-"| POST | `/api/auth/login` | Login and get JWT token |",
-"| POST | `/api/auth/reset-password` | Reset user password |",
-"",
-"### Properties",
-"| Method | Endpoint | Auth | Description |",
-"|---|---|---|---|",
-"| GET | `/api/property/all` | No | Get all properties |",
-"| POST | `/api/property/add` | Owner | Add new property |",
-"| PUT | `/api/property/:id` | Owner | Update property |",
-"| DELETE | `/api/property/:id` | Owner | Delete property |",
-"",
-"---",
-"",
-"## ⚙️ Setup and Installation",
-"",
-"**1. Clone the repository**",
-"",
-"    git clone https://github.com/ashokvarma1188/SmartNest.git",
-"    cd SmartNest/server",
-"    npm install",
-"",
-"**2. Create `.env` inside `server/` folder**",
-"",
-"    PORT=4000",
-"    MONGO_URI=your_mongodb_connection_string",
-"    JWT_SECRET=your_secret_key",
-"",
-"**3. Start the server**",
-"",
-"    node server.js",
-"",
-"**4. Open the frontend**",
-"",
-"Open `frontend/login.html` with Live Server in VS Code.",
-"",
-"---",
-"",
-"## 🎯 Why I Built This",
-"",
-"Broker commission is a real problem in India's real estate market. Both owners and buyers end up paying extra money to a middleman who simply connects two parties.",
-"",
-"SmartNest solves this by building a platform where:",
-"- **Owners list properties themselves** — full control, no commission",
-"- **Buyers browse and contact directly** — pay only the actual property price",
-"- **No broker. No commission. No middleman.**",
-"",
-"---",
-"",
-"## 🔮 Future Features",
-"",
-"- [ ] AI-based price prediction for buyers",
-"- [ ] Neighborhood score — safety, schools, transport",
-"- [ ] Multiple property images per listing",
-"- [ ] Filter search by price range and bedrooms",
-"- [ ] Deploy to cloud — Render + Vercel",
-"",
-"---",
-"",
-"## 👨‍💻 Author",
-"",
-"**Ashok Varma**",
-"",
-"GitHub: [@ashokvarma1188](https://github.com/ashokvarma1188)",
-"",
-"---",
-"",
-"> *SmartNest — Because the deed should change hands directly.*"
-].join("\n");
+In India, buying or renting a property usually means dealing with a broker who stands between owner and buyer — and charges commission from both sides.
 
-document.getElementById('preview').textContent = README;
+| Without SmartNest | With SmartNest |
+|---|---|
+| Owner → Broker → Buyer | Owner → Buyer (Direct) |
+| Owner pays commission | Zero commission |
+| Buyer pays extra money | Buyer pays only property price |
+| Broker controls information | Full transparency |
 
-function copyIt(){
-  navigator.clipboard.writeText(README).then(function(){
-    var btn = document.getElementById('btn');
-    btn.classList.add('done');
-    btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied! Now go paste it in GitHub';
-    setTimeout(function(){
-      btn.classList.remove('done');
-      btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Full README';
-    }, 4000);
-  });
-}
-</script>
-</body>
-</html>
+**SmartNest removes the broker completely.**
+
+---
+
+## ✨ Features
+
+### For Property Owners
+- 🔐 Secure Register and Login with JWT Authentication
+- 🏡 Add Properties with title, price, location, bedrooms, area, description, and photo
+- ✏️ Edit Property details anytime
+- 🗑️ Delete Property listings
+- 📊 Owner Dashboard showing all listings at a glance
+
+### For Buyers
+- 🔍 Browse All Properties in one clean page
+- 🔎 Live Search by title or location
+- 📞 Contact Owner Directly — see real owner name and email, no broker involved
+
+### Security
+- 🔑 JWT-based authentication
+- 🛡️ Protected routes — only logged-in owners can add, edit, delete
+- 🔒 Forgot Password — reset password with email
+- 🧂 Passwords hashed with bcrypt
+
+### Extra
+- 📸 Photo Upload for each property
+- 👤 Role-based access — Owner dashboard vs Buyer browse page
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | HTML5, CSS3, Vanilla JavaScript |
+| Backend | Node.js, Express.js |
+| Database | MongoDB Atlas |
+| Authentication | JWT (JSON Web Tokens) |
+| Password Hashing | bcryptjs |
+| File Upload | Multer |
+
+---
+
+## 📁 Project Structure
+
+    SmartNest/
+    ├── frontend/
+    │   ├── index.html
+    │   ├── login.html
+    │   ├── register.html
+    │   ├── forgot-password.html
+    │   ├── add-property.html
+    │   └── browse-properties.html
+    │
+    └── server/
+        ├── server.js
+        ├── config/db.js
+        ├── models/
+        │   ├── user.js
+        │   └── property.js
+        ├── controllers/
+        │   ├── authController.js
+        │   └── propertyController.js
+        ├── middleware/
+        │   └── authMiddleware.js
+        ├── routes/
+        │   ├── authRoutes.js
+        │   └── propertyRoutes.js
+        └── uploads/
+
+---
+
+## 🔌 API Endpoints
+
+### Auth
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login and get JWT token |
+| POST | `/api/auth/reset-password` | Reset user password |
+
+### Properties
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/api/property/all` | No | Get all properties |
+| POST | `/api/property/add` | Owner | Add new property |
+| PUT | `/api/property/:id` | Owner | Update property |
+| DELETE | `/api/property/:id` | Owner | Delete property |
+
+---
+
+## ⚙️ Setup and Installation
+
+**1. Clone the repository**
+
+    git clone https://github.com/ashokvarma1188/SmartNest.git
+    cd SmartNest/server
+    npm install
+
+**2. Create `.env` inside `server/` folder**
+
+    PORT=4000
+    MONGO_URI=your_mongodb_connection_string
+    JWT_SECRET=your_secret_key
+
+**3. Start the server**
+
+    node server.js
+
+**4. Open the frontend**
+
+Open `frontend/login.html` with Live Server in VS Code.
+
+---
+
+## 🎯 Why I Built This
+
+Broker commission is a real problem in India's real estate market. Both owners and buyers end up paying extra money to a middleman who simply connects two parties.
+
+SmartNest solves this by building a platform where:
+- **Owners list properties themselves** — full control, no commission
+- **Buyers browse and contact directly** — pay only the actual property price
+- **No broker. No commission. No middleman.**
+
+---
+
+## 🔮 Future Features
+
+- [ ] AI-based price prediction for buyers
+- [ ] Neighborhood score — safety, schools, transport
+- [ ] Multiple property images per listing
+- [ ] Filter search by price range and bedrooms
+- [ ] Deploy to cloud — Render + Vercel
+
+---
+
+## 👨‍💻 Author
+
+**Ashok Varma**
+
+GitHub: [@ashokvarma1188](https://github.com/ashokvarma1188)
+
+---
+
+> *SmartNest — Because the deed should change hands directly.*
