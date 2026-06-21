@@ -351,7 +351,7 @@
 </div>
 
 <script>
-  const API_BASE = "http://localhost:4000/api";
+  const API_BASE = "https://smartnest-2zw0.onrender.com/api";
 
   const token  = localStorage.getItem('smartnest_token')  || sessionStorage.getItem('smartnest_token');
   const userRaw= localStorage.getItem('smartnest_user')   || sessionStorage.getItem('smartnest_user');
@@ -406,7 +406,7 @@
       if (p.bedrooms) chips.push(`🛏 ${p.bedrooms} Bed`);
       if (p.area)     chips.push(`📐 ${p.area} sq.ft`);
 
-      const imgUrl = p.image ? `http://localhost:4000${p.image}` : null;
+      const imgUrl = p.image ? `https://smartnest-2zw0.onrender.com${p.image}` : null;
       card.innerHTML = `
         <div class="prop-media" ${imgUrl ? `style="background-image:url('${imgUrl}');background-size:cover;background-position:center;"` : ''}>
           <span class="prop-type">Active</span>
