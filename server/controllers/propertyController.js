@@ -1,3 +1,4 @@
+// Add, Edit, Delete, Get properties logic
 const Property = require("../models/property");
 
 // ADD PROPERTY
