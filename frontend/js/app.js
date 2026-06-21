@@ -1,3 +1,4 @@
+// Frontend JavaScript
 console.log("app.js loaded");
 const propertyContainer = document.getElementById("property-container");
 
