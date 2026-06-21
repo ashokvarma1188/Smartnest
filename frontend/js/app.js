@@ -5,7 +5,7 @@ const propertyContainer = document.getElementById("property-container");
 async function fetchProperties(){
   try {
     const response = await fetch(
-      "http://localhost:4000/api/property/all"
+      "https://smartnest-2zw0.onrender.com/api/property/all"
     );
 
     const data = await response.json();
