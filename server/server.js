@@ -10,7 +10,6 @@ const cors = require("cors");
 
 
 dotenv.config();
-
 connectDB();
 
 const uploadsDir = path.join(__dirname, 'uploads');
