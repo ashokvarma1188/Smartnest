@@ -199,6 +199,30 @@
     .stat-divider{display:none;}
     footer{flex-direction:column;align-items:flex-start;gap:8px;}
   }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal{
+    opacity:0;
+    transform:translateY(32px);
+    transition:opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  .reveal-left{opacity:0;transform:translateX(-32px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1);}
+  .reveal-left.visible{opacity:1;transform:translateX(0);}
+  .reveal-scale{opacity:0;transform:scale(.94);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);}
+  .reveal-scale.visible{opacity:1;transform:scale(1);}
+
+  /* stagger delays */
+  .d1{transition-delay:.08s!important;}
+  .d2{transition-delay:.18s!important;}
+  .d3{transition-delay:.28s!important;}
+  .d4{transition-delay:.38s!important;}
+  .d5{transition-delay:.46s!important;}
+  .d6{transition-delay:.54s!important;}
+
+  /* navbar scroll effect */
+  nav.scrolled{background:rgba(10,25,40,0.97);box-shadow:0 2px 24px rgba(0,0,0,0.3);}
+  nav{transition:background .3s,box-shadow .3s;}
 </style>
 </head>
 <body>
@@ -243,21 +267,21 @@
 
 <!-- HOW IT WORKS -->
 <section class="section section-center">
-  <div class="section-tag">How it works</div>
-  <h2 class="section-title">Three steps to your next home</h2>
-  <p class="section-sub">No agents, no paperwork maze. Just you and the owner.</p>
+  <div class="section-tag reveal">How it works</div>
+  <h2 class="section-title reveal d1">Three steps to your next home</h2>
+  <p class="section-sub reveal d2">No agents, no paperwork maze. Just you and the owner.</p>
   <div class="how-grid">
-    <div class="how-card" data-n="1">
+    <div class="how-card reveal d1" data-n="1">
       <div class="how-icon">📝</div>
       <h3>Create your account</h3>
       <p>Sign up as a Buyer to browse, or as an Owner to list. Takes 30 seconds.</p>
     </div>
-    <div class="how-card" data-n="2">
+    <div class="how-card reveal d2" data-n="2">
       <div class="how-icon">🔍</div>
       <h3>Browse & filter</h3>
       <p>Search by location, filter by price range and bedrooms. Save favorites.</p>
     </div>
-    <div class="how-card" data-n="3">
+    <div class="how-card reveal d3" data-n="3">
       <div class="how-icon">📞</div>
       <h3>Contact the owner</h3>
       <p>Get the owner's direct email — no broker, no commission. Zero cost.</p>
@@ -268,8 +292,8 @@
 <!-- FEATURED PROPERTIES -->
 <section class="feat-section">
   <div class="section-center" style="margin-bottom:36px;">
-    <div class="section-tag">Live listings</div>
-    <h2 class="section-title">Featured Properties</h2>
+    <div class="section-tag reveal">Live listings</div>
+    <h2 class="section-title reveal d1">Featured Properties</h2>
   </div>
 
   <div class="feat-grid" id="featGrid">
@@ -287,22 +311,22 @@
 <!-- WHY SMARTNEST -->
 <section class="why-section">
   <div class="section-center" style="margin-bottom:36px;">
-    <div class="section-tag">Why SmartNest</div>
-    <h2 class="section-title">Built for India's property market</h2>
+    <div class="section-tag reveal">Why SmartNest</div>
+    <h2 class="section-title reveal d1">Built for India's property market</h2>
   </div>
   <div class="why-grid">
-    <div class="why-item"><div class="why-icon">🏠</div><div><h4>Owner-direct listings</h4><p>Every property is posted by the real owner — no broker middlemen.</p></div></div>
-    <div class="why-item"><div class="why-icon">📸</div><div><h4>Photo galleries</h4><p>Upload multiple photos so buyers get a full picture before reaching out.</p></div></div>
-    <div class="why-item"><div class="why-icon">🔒</div><div><h4>Secure login</h4><p>JWT-based auth with OTP password reset keeps your account safe.</p></div></div>
-    <div class="why-item"><div class="why-icon">❤️</div><div><h4>Favorites list</h4><p>Save properties you love. Comes back every time you visit.</p></div></div>
-    <div class="why-item"><div class="why-icon">🔍</div><div><h4>Smart filters</h4><p>Filter by price range and bedrooms. Find exactly what fits your budget.</p></div></div>
-    <div class="why-item"><div class="why-icon">💰</div><div><h4>100% free</h4><p>No listing fees, no commission, no hidden charges. Ever.</p></div></div>
+    <div class="why-item reveal d1"><div class="why-icon">🏠</div><div><h4>Owner-direct listings</h4><p>Every property is posted by the real owner — no broker middlemen.</p></div></div>
+    <div class="why-item reveal d2"><div class="why-icon">📸</div><div><h4>Photo galleries</h4><p>Upload multiple photos so buyers get a full picture before reaching out.</p></div></div>
+    <div class="why-item reveal d3"><div class="why-icon">🔒</div><div><h4>Secure login</h4><p>JWT-based auth with OTP password reset keeps your account safe.</p></div></div>
+    <div class="why-item reveal d4"><div class="why-icon">❤️</div><div><h4>Favorites list</h4><p>Save properties you love. Comes back every time you visit.</p></div></div>
+    <div class="why-item reveal d5"><div class="why-icon">🔍</div><div><h4>Smart filters</h4><p>Filter by price range and bedrooms. Find exactly what fits your budget.</p></div></div>
+    <div class="why-item reveal d6"><div class="why-icon">💰</div><div><h4>100% free</h4><p>No listing fees, no commission, no hidden charges. Ever.</p></div></div>
   </div>
 </section>
 
 <!-- CTA -->
 <section class="cta-section">
-  <div class="cta-box">
+  <div class="cta-box reveal-scale">
     <h2>Ready to find your next home?</h2>
     <p>Join SmartNest today — it's free for buyers and owners alike.</p>
     <div class="cta-btns">
@@ -336,7 +360,54 @@
     } catch(e) {}
   }
 
-  // Load featured properties
+  // ── NAVBAR SCROLL EFFECT ──
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, {passive:true});
+
+  // ── SCROLL REVEAL (IntersectionObserver) ──
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-scale');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ── NUMBER COUNTER ANIMATION ──
+  function animateCounter(el, target, suffix) {
+    let start = 0;
+    const duration = 1400;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(ease * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = document.getElementById('statProps');
+        if (el && el.textContent !== '—') {
+          const num = parseInt(el.textContent);
+          if (!isNaN(num)) animateCounter(el, num, '+');
+        }
+        statObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  const statsEl = document.querySelector('.hero-stats');
+  if (statsEl) statObserver.observe(statsEl);
+
+  // ── LOAD FEATURED PROPERTIES ──
   (async function () {
     try {
       const res = await fetch(API + '/property/all');
@@ -348,10 +419,10 @@
       const grid = document.getElementById('featGrid');
       if (!list.length) { grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;">No properties yet — be the first to list!</p>'; return; }
 
-      grid.innerHTML = list.map(p => {
+      grid.innerHTML = list.map((p, i) => {
         const imgUrl = p.image ? API.replace('/api','') + p.image : null;
         const chips = [p.bedrooms ? '🛏 ' + p.bedrooms + ' Bed' : '', p.area ? '📐 ' + p.area + ' sq.ft' : ''].filter(Boolean);
-        return `<a class="prop-card" href="property-detail.html?id=${p._id}">
+        return `<a class="prop-card reveal" style="transition-delay:${i*0.1}s" href="property-detail.html?id=${p._id}">
           <div class="prop-media">
             ${imgUrl ? `<img src="${imgUrl}" alt="${p.title}" loading="lazy"/>` : '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(78,122,156,0.4)" stroke-width="1.4"><path d="M3 11L12 4l9 7M5 10v10h14V10"/></svg>'}
             <span class="prop-badge">Active</span>
@@ -367,6 +438,8 @@
           </div>
         </a>`;
       }).join('');
+      // observe newly added cards
+      document.querySelectorAll('.prop-card.reveal').forEach(el => observer.observe(el));
     } catch(e) {
       document.getElementById('featGrid').innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;">Could not load properties.</p>';
     }
