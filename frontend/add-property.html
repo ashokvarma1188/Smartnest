@@ -200,45 +200,73 @@
   }
 
   .prop-media{
-    height:160px;
-    background:linear-gradient(135deg, #1B3147, #0F2236);
+    height:175px;
+    background:linear-gradient(135deg, #162D42, #0F2236);
     position:relative;
     display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
   }
-  .prop-media svg{ width:54px; height:54px; opacity:.5; }
+  .prop-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .prop-media .no-img-bg{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px;
+  }
+  .prop-media .no-img-bg svg{ width:40px; height:40px; opacity:.3; }
+  .prop-media .no-img-bg span{ font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
+  .prop-media::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(10,25,40,0.7) 0%, transparent 55%);
+    pointer-events:none;
+  }
   .prop-status{
-    position:absolute; top:10px; left:10px;
-    font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
-    padding:4px 9px; border-radius:20px;
-    background:var(--ok-soft); color:var(--ok);
-    border:1px solid rgba(76,122,94,0.3);
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px;
+    background:rgba(76,122,94,0.9); color:#fff;
+    backdrop-filter:blur(4px);
+  }
+  .prop-img-count{
+    position:absolute; top:10px; right:10px; z-index:2;
+    font-size:10px; font-weight:700;
+    padding:3px 8px; border-radius:20px;
+    background:rgba(15,34,54,0.7); color:rgba(255,255,255,0.8);
+    backdrop-filter:blur(4px); display:flex; align-items:center; gap:4px;
+  }
+  .prop-price-overlay{
+    position:absolute; bottom:10px; left:12px; z-index:2;
+    font-family:'Fraunces',serif; font-size:18px; font-weight:500; color:#fff;
+    text-shadow:0 1px 4px rgba(0,0,0,.5);
   }
 
-  .prop-body{ padding:16px 18px 18px; }
-  .prop-title{ font-size:16px; font-weight:600; margin:0 0 4px; color:var(--text-dark); }
+  .prop-body{ padding:14px 16px 15px; }
+  .prop-title{ font-size:15px; font-weight:700; margin:0 0 4px; color:var(--text-dark); line-height:1.3; }
   .prop-loc{
-    font-size:12.5px; color:var(--text-muted-dark);
-    display:flex; align-items:center; gap:5px; margin-bottom:12px;
+    font-size:12px; color:var(--text-muted-dark);
+    display:flex; align-items:center; gap:4px; margin-bottom:10px;
   }
-  .prop-loc svg{ width:12px; height:12px; flex-shrink:0; }
+  .prop-loc svg{ width:11px; height:11px; flex-shrink:0; }
+  .prop-chips{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .p-chip{
+    font-size:11px; color:var(--text-muted-dark);
+    background:var(--paper); border:1px solid var(--paper-dim);
+    padding:2px 8px; border-radius:20px;
+  }
 
   .prop-meta{
     display:flex; align-items:center; justify-content:space-between;
-    border-top:1px solid var(--paper-dim); padding-top:12px;
+    border-top:1px solid var(--paper-dim); padding-top:11px;
   }
-  .prop-price{ font-family:'Fraunces', serif; font-size:17px; font-weight:500; color:var(--brass-dark); }
-  .prop-actions{ display:flex; gap:8px; }
+  .prop-actions{ display:flex; gap:7px; }
   .icon-btn{
-    width:30px; height:30px; border-radius:7px;
+    display:flex; align-items:center; gap:5px;
+    padding:6px 11px; border-radius:7px;
     border:1px solid var(--paper-dim); background:#fff;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; transition:border-color .15s ease, background .15s ease;
+    font:inherit; font-size:12px; font-weight:600; color:var(--text-muted-dark);
+    cursor:pointer; transition:all .15s ease;
   }
-  .icon-btn svg{ width:14px; height:14px; stroke:var(--text-muted-dark); }
-  .icon-btn:hover{ border-color:var(--brass); background:var(--brass-soft); }
-  .icon-btn:hover svg{ stroke:var(--brass-dark); }
-  .icon-btn.danger:hover{ border-color:var(--err); background:rgba(182,73,58,0.08); }
-  .icon-btn.danger:hover svg{ stroke:var(--err); }
+  .icon-btn svg{ width:13px; height:13px; stroke:currentColor; }
+  .icon-btn:hover{ border-color:var(--brass); background:var(--brass-soft); color:var(--brass-dark); }
+  .icon-btn.danger:hover{ border-color:var(--err); background:rgba(182,73,58,0.08); color:var(--err); }
 
   /* ---------- EMPTY STATE ---------- */
   .empty{
@@ -544,23 +572,35 @@
       const card = document.createElement('div');
       card.className = 'prop-card';
       card.style.animationDelay = `${i * 0.06}s`;
-      const imgUrl = p.image ? `https://smartnest-2zw0.onrender.com${p.image}` : null;
+      const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : p.image;
+      const imgUrl = imgSrc ? `https://smartnest-2zw0.onrender.com${imgSrc}` : null;
+      const imgCount = p.images && p.images.length > 1 ? p.images.length : 0;
+      const chips = [];
+      if (p.bedrooms) chips.push(`🛏 ${p.bedrooms} Bed`);
+      if (p.bathrooms) chips.push(`🚿 ${p.bathrooms} Bath`);
+      if (p.area) chips.push(`📐 ${p.area} sq.ft`);
+
       card.innerHTML = `
-        <div class="prop-media" ${imgUrl ? `style="background-image:url('${imgUrl}');background-size:cover;background-position:center;"` : ''}>
+        <div class="prop-media">
+          ${imgUrl ? `<img src="${imgUrl}" alt="${p.title}" loading="lazy"/>` : `<div class="no-img-bg">${houseIconSVG()}<span>No photo yet</span></div>`}
           <span class="prop-status">${p.status || 'Active'}</span>
-          ${imgUrl ? '' : houseIconSVG()}
+          ${imgCount > 1 ? `<span class="prop-img-count"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>${imgCount}</span>` : ''}
+          <div class="prop-price-overlay">₹${Number(p.price || 0).toLocaleString('en-IN')}</div>
         </div>
         <div class="prop-body">
           <div class="prop-title">${p.title || 'Untitled property'}</div>
           <div class="prop-loc">${pinIconSVG()} ${p.location || 'Location not set'}</div>
+          ${chips.length ? `<div class="prop-chips">${chips.map(c => `<span class="p-chip">${c}</span>`).join('')}</div>` : ''}
           <div class="prop-meta">
-            <div class="prop-price">₹${Number(p.price || 0).toLocaleString('en-IN')}</div>
+            <a href="property-detail.html?id=${p._id}" style="font-size:12px;font-weight:600;color:var(--brass-dark);text-decoration:none;" target="_blank">View listing →</a>
             <div class="prop-actions">
               <button class="icon-btn" title="Edit" data-id="${p._id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Edit
               </button>
               <button class="icon-btn danger" title="Delete" data-id="${p._id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                Delete
               </button>
             </div>
           </div>
