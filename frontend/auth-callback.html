@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartNest — Signing you in…</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    background:#0F2236;color:#E8EEF3;
+  }
+  .box{text-align:center;}
+  .spinner{
+    width:44px;height:44px;border:3px solid rgba(201,138,53,0.25);
+    border-top-color:#C98A35;border-radius:50%;
+    animation:spin .8s linear infinite;margin:0 auto 20px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .msg{font-size:16px;font-weight:600;color:#C98A35;}
+  .sub{font-size:13px;color:#9FB6C9;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="spinner"></div>
+  <div class="msg">Signing you in…</div>
+  <div class="sub">Please wait a moment</div>
+</div>
+
+<script>
+  // Read token and user from URL after Google redirects here
+  const params = new URLSearchParams(window.location.search);
+  const token  = params.get('token');
+  const user   = params.get('user');
+
+  if (!token || !user) {
+    // Something went wrong — go back to login
+    window.location.href = 'login.html';
+  } else {
+    // Save to localStorage (same as normal login)
+    localStorage.setItem('smartnest_token', token);
+    localStorage.setItem('smartnest_user', user);
+
+    const parsed = JSON.parse(user);
+
+    // Redirect based on role
+    setTimeout(() => {
+      window.location.href = parsed.role === 'owner'
+        ? 'add-property.html'
+        : 'browse-properties.html';
+    }, 800);
+  }
+</script>
+</body>
+</html>
