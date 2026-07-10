@@ -39,21 +39,50 @@
   .btn-solid:hover{background:var(--brass-dark);}
 
   /* ── HERO ── */
+  @keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,-20px) scale(1.08);}}
+  @keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-25px,18px) scale(1.05);}}
+  @keyframes blobFloat3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(18px,24px) scale(1.06);}}
+
   .hero{
     min-height:92vh;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#060E1A 0%,#0A1928 40%,#0D1F30 70%,#060E1A 100%);
   }
+  /* subtle dot grid */
   .hero::before{
     content:"";position:absolute;inset:0;
-    background:linear-gradient(rgba(78,122,156,0.06) 1px,transparent 1px) 0 0/44px 44px,
-               linear-gradient(90deg,rgba(78,122,156,0.06) 1px,transparent 1px) 0 0/44px 44px;
+    background-image:radial-gradient(rgba(78,122,156,0.18) 1px,transparent 1px);
+    background-size:28px 28px;
     pointer-events:none;
+    mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
   }
-  .hero::after{
-    content:"";position:absolute;width:700px;height:700px;border-radius:50%;
-    background:radial-gradient(circle,rgba(201,138,53,0.07) 0%,transparent 65%);
-    top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
+  /* gradient mesh blobs */
+  .hero-blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+  .blob1{
+    width:600px;height:600px;
+    background:radial-gradient(circle,rgba(201,138,53,0.13) 0%,transparent 70%);
+    top:-100px;left:-100px;
+    animation:blobFloat1 9s ease-in-out infinite;
+  }
+  .blob2{
+    width:700px;height:700px;
+    background:radial-gradient(circle,rgba(78,122,156,0.18) 0%,transparent 70%);
+    bottom:-150px;right:-150px;
+    animation:blobFloat2 11s ease-in-out infinite;
+  }
+  .blob3{
+    width:500px;height:500px;
+    background:radial-gradient(circle,rgba(61,100,156,0.12) 0%,transparent 70%);
+    top:40%;left:60%;
+    animation:blobFloat3 13s ease-in-out infinite;
+  }
+  /* top edge glow line */
+  .hero-glow-line{
+    position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:60%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(201,138,53,0.5),transparent);
+    pointer-events:none;
   }
   .hero-inner{position:relative;z-index:1;max-width:760px;}
   .hero-eyebrow{
@@ -238,6 +267,10 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-blob blob1"></div>
+  <div class="hero-blob blob2"></div>
+  <div class="hero-blob blob3"></div>
+  <div class="hero-glow-line"></div>
   <div class="hero-inner">
     <div class="hero-eyebrow"><span class="dot"></span>No broker. No commission.</div>
     <h1 class="hero-title">Find your <em>dream home</em><br>directly from the owner.</h1>
