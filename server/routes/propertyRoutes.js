@@ -19,10 +19,10 @@ const {
   deleteProperty,
 } = require("../controllers/propertyController");
 
-router.post("/add",    protect, upload.single("image"), addProperty);
+router.post("/add",    protect, upload.array("images", 8), addProperty);  // ✦ multiple images
 router.get("/all",     getAllProperties);
 router.get("/:id",     getPropertyById);
-router.put("/:id",     protect, upload.single("image"), updateProperty);
+router.put("/:id",     protect, upload.array("images", 8), updateProperty); // ✦ multiple images
 router.delete("/:id",  protect, deleteProperty);
 
 

@@ -14,6 +14,10 @@ const addProperty = async (req, res) => {
       area,
     } = req.body;
 
+    // ✦ NEW — handle multiple images (req.files array from multer.array)
+    const imageFiles = req.files || [];
+    const imagePaths = imageFiles.map(f => `/uploads/${f.filename}`);
+
     const property = await Property.create({
       title,
       description,
@@ -22,7 +26,8 @@ const addProperty = async (req, res) => {
       bedrooms: Number(bedrooms) || 0,
       bathrooms:Number(bathrooms) || 0,
       area:     Number(area) || 0,
-      image:    req.file ? `/uploads/${req.file.filename}` : null,
+      image:    imagePaths[0] || null,   // first image = primary (backwards compat)
+      images:   imagePaths,              // all images for gallery
       owner:    req.user.id,
     });
 
@@ -97,7 +102,12 @@ const updateProperty = async (req, res) => {
       bedrooms:    Number(req.body.bedrooms) || 0,
       area:        Number(req.body.area) || 0,
     };
-    if (req.file) updateData.image = `/uploads/${req.file.filename}`;
+    // ✦ NEW — handle multiple images on update
+    if (req.files && req.files.length > 0) {
+      const imagePaths = req.files.map(f => `/uploads/${f.filename}`);
+      updateData.image  = imagePaths[0];
+      updateData.images = imagePaths;
+    }
 
     const property = await Property.findByIdAndUpdate(
       req.params.id,

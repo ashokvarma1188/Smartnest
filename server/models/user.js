@@ -23,6 +23,17 @@ const userSchema = new mongoose.Schema(
       enum: ["buyer", "owner"],
       default: "buyer",
     },
+
+    // ✦ NEW — OTP fields (added for forgot-password flow)
+    otp: {
+      type: String,
+      default: null,
+    },
+    otpExpiry: {
+      type: Date,
+      default: null,
+    },
+    // ✦ END NEW
   },
   {
     timestamps: true,

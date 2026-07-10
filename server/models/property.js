@@ -39,6 +39,12 @@ const propertySchema = new mongoose.Schema(
       type: String,
     },
 
+    // ✦ NEW — multiple images for gallery (feature 8)
+    images: {
+      type: [String],
+      default: [],
+    },
+
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

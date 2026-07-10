@@ -1,0 +1,239 @@
+<!-- User profile — view info + change password -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartNest — My Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F2236;--ink-deep:#0A1928;--ink-card:#162A3A;
+    --line:rgba(78,122,156,0.22);--line-s:rgba(78,122,156,0.1);
+    --brass:#C98A35;--brass-dark:#A56F23;--brass-dim:rgba(201,138,53,0.13);--brass-ln:rgba(201,138,53,0.35);
+    --paper:#F6F4EE;--paper-dim:#E9E5D8;
+    --ok:#3DAA6A;--ok-dim:rgba(61,170,106,0.12);--ok-ln:rgba(61,170,106,0.28);
+    --err:#B6493A;--err-dim:rgba(182,73,58,0.1);--err-ln:rgba(182,73,58,0.25);
+    --text-light:#E8EEF3;--text-muted:#9FB6C9;--text-dark:#1B2430;--text-dim:#6B7280;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Space Grotesk',sans-serif;background:var(--paper);color:var(--text-dark);min-height:100vh;}
+
+  /* TOPBAR */
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    background:var(--ink);color:var(--text-light);
+    padding:0 32px;height:56px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .brand{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--text-muted);}
+  .brand .dot{width:6px;height:6px;border-radius:50%;background:var(--brass);}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .back-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer;text-decoration:none;transition:border-color .15s,color .15s;}
+  .back-btn:hover{border-color:var(--brass);color:var(--brass);}
+  .back-btn svg{width:14px;height:14px;}
+  .logout-btn{background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer;transition:border-color .15s,color .15s;}
+  .logout-btn:hover{border-color:var(--err);color:var(--err);}
+
+  /* PAGE */
+  .page{max-width:600px;margin:0 auto;padding:40px 24px 60px;}
+
+  /* AVATAR SECTION */
+  .avatar-section{display:flex;align-items:center;gap:20px;margin-bottom:32px;padding:28px;background:var(--ink);border-radius:16px;}
+  .big-avatar{
+    width:72px;height:72px;border-radius:50%;flex-shrink:0;
+    background:var(--brass);display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:white;
+  }
+  .avatar-info .name{font-size:20px;font-weight:700;color:var(--text-light);margin-bottom:5px;}
+  .avatar-info .email{font-size:13px;color:var(--text-muted);margin-bottom:8px;}
+  .role-pill{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    padding:3px 10px;border-radius:20px;
+  }
+  .role-pill.owner{background:var(--brass-dim);color:var(--brass);border:1px solid var(--brass-ln);}
+  .role-pill.buyer{background:var(--ok-dim);color:var(--ok);border:1px solid var(--ok-ln);}
+
+  /* INFO CARD */
+  .info-card{background:white;border:1px solid var(--paper-dim);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+  .info-header{padding:14px 18px;border-bottom:1px solid var(--paper-dim);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);}
+  .info-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line-s);}
+  .info-row:last-child{border-bottom:none;}
+  .info-row svg{width:15px;height:15px;stroke:var(--brass);flex-shrink:0;}
+  .info-row .il{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+  .info-row .iv{font-size:13.5px;font-weight:600;color:var(--text-dark);}
+
+  /* PASSWORD FORM */
+  .pw-card{background:white;border:1px solid var(--paper-dim);border-radius:14px;overflow:hidden;}
+  .pw-header{padding:14px 18px;border-bottom:1px solid var(--paper-dim);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);}
+  .pw-body{padding:20px 18px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;}
+  .input-shell{position:relative;border:1.5px solid var(--paper-dim);background:white;border-radius:8px;transition:border-color .15s,box-shadow .15s;}
+  .input-shell:focus-within{border-color:var(--brass);box-shadow:0 0 0 3px rgba(201,138,53,0.15);}
+  .input-shell input{width:100%;border:none;background:transparent;outline:none;font:inherit;font-size:14px;padding:11px 14px;color:var(--text-dark);}
+  .toggle-pw{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--text-dim);padding:4px 6px;letter-spacing:.04em;}
+  .toggle-pw:hover{color:var(--brass-dark);}
+  .submit-btn{width:100%;border:none;border-radius:8px;background:var(--ink);color:var(--text-light);font:inherit;font-size:14px;font-weight:700;padding:12px;cursor:pointer;transition:background .15s;margin-top:4px;}
+  .submit-btn:hover{background:var(--ink-deep);}
+  .submit-btn:disabled{opacity:0.55;cursor:not-allowed;}
+  .status{margin-top:12px;font-size:13px;border-radius:7px;padding:10px 12px;display:none;line-height:1.45;}
+  .status.show{display:block;}
+  .status.error{background:var(--err-dim);color:var(--err);border:1px solid var(--err-ln);}
+  .status.ok{background:var(--ok-dim);color:var(--ok);border:1px solid var(--ok-ln);}
+
+  @media(max-width:480px){.page{padding:24px 16px 48px;}.avatar-section{flex-direction:column;text-align:center;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>SmartNest</div>
+  <div class="topbar-right">
+    <a href="#" id="dashLink" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+      Dashboard
+    </a>
+    <button class="logout-btn" id="logoutBtn">Log out</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Avatar -->
+  <div class="avatar-section">
+    <div class="big-avatar" id="bigAvatar">U</div>
+    <div class="avatar-info">
+      <div class="name" id="userName">—</div>
+      <div class="email" id="userEmail">—</div>
+      <div class="role-pill" id="rolePill">—</div>
+    </div>
+  </div>
+
+  <!-- Account info -->
+  <div class="info-card">
+    <div class="info-header">Account details</div>
+    <div class="info-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div><div class="il">Full name</div><div class="iv" id="infoName">—</div></div>
+    </div>
+    <div class="info-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <div><div class="il">Email address</div><div class="iv" id="infoEmail">—</div></div>
+    </div>
+    <div class="info-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div><div class="il">Role</div><div class="iv" id="infoRole">—</div></div>
+    </div>
+  </div>
+
+  <!-- Change password -->
+  <div class="pw-card">
+    <div class="pw-header">Change password</div>
+    <div class="pw-body">
+      <form id="pwForm" novalidate>
+        <div class="field">
+          <label for="newPw">New password</label>
+          <div class="input-shell">
+            <input type="password" id="newPw" placeholder="Min 6 characters" required/>
+            <button type="button" class="toggle-pw" id="togglePw">SHOW</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="confirmPw">Confirm password</label>
+          <div class="input-shell">
+            <input type="password" id="confirmPw" placeholder="Same password again" required/>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span id="submitLabel">Update Password</span>
+        </button>
+        <div class="status" id="pwStatus"></div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script src="./js/toast.js"></script>
+<script>
+  const API = "https://smartnest-2zw0.onrender.com/api";
+  const token   = localStorage.getItem('smartnest_token')  || sessionStorage.getItem('smartnest_token');
+  const userRaw = localStorage.getItem('smartnest_user')   || sessionStorage.getItem('smartnest_user');
+  const user    = userRaw ? JSON.parse(userRaw) : null;
+
+  if (!token || !user) { window.location.href = 'login.html'; }
+
+  // Populate UI
+  const initial = (user.name || 'U').charAt(0).toUpperCase();
+  document.getElementById('bigAvatar').textContent  = initial;
+  document.getElementById('userName').textContent   = user.name  || '—';
+  document.getElementById('userEmail').textContent  = user.email || '—';
+  document.getElementById('infoName').textContent   = user.name  || '—';
+  document.getElementById('infoEmail').textContent  = user.email || '—';
+  document.getElementById('infoRole').textContent   = user.role === 'owner' ? 'Property Owner' : 'Property Buyer';
+
+  const pill = document.getElementById('rolePill');
+  pill.textContent = user.role === 'owner' ? 'Owner' : 'Buyer';
+  pill.className   = 'role-pill ' + (user.role || 'buyer');
+
+  // Dashboard link based on role
+  document.getElementById('dashLink').href = user.role === 'owner' ? 'add-property.html' : 'browse-properties.html';
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.clear(); sessionStorage.clear();
+    window.location.href = 'login.html';
+  });
+
+  // Password toggle
+  document.getElementById('togglePw').addEventListener('click', function () {
+    const inp = document.getElementById('newPw');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    this.textContent = inp.type === 'password' ? 'SHOW' : 'HIDE';
+  });
+
+  // Status helper
+  function showStatus(msg, kind) {
+    const el = document.getElementById('pwStatus');
+    el.textContent = msg; el.className = 'status show ' + kind;
+  }
+
+  // Change password form
+  document.getElementById('pwForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPw = document.getElementById('newPw').value;
+    const conPw = document.getElementById('confirmPw').value;
+
+    if (!newPw || !conPw)     { showStatus('Please fill in both fields.', 'error'); return; }
+    if (newPw.length < 6)     { showStatus('Password must be at least 6 characters.', 'error'); return; }
+    if (newPw !== conPw)      { showStatus('Passwords do not match.', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    const lbl = document.getElementById('submitLabel');
+    btn.disabled = true; lbl.textContent = 'Updating…';
+
+    try {
+      const res  = await fetch(API + '/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, newPassword: newPw })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Something went wrong.');
+      showStatus('Password updated successfully!', 'ok');
+      showToast('Password updated!', 'success');
+      document.getElementById('pwForm').reset();
+    } catch (err) {
+      showStatus(err.message, 'error');
+      showToast(err.message, 'error');
+    } finally {
+      btn.disabled = false; lbl.textContent = 'Update Password';
+    }
+  });
+</script>
+</body>
+</html>

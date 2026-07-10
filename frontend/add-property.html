@@ -351,6 +351,10 @@
         <div class="avatar" id="avatarInitial">A</div>
         <span id="userName">Owner</span>
       </div>
+      <a href="profile.html" style="display:flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text-muted-ink);font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer;text-decoration:none;transition:border-color .15s,color .15s;" onmouseover="this.style.borderColor='var(--brass)';this.style.color='var(--brass)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='var(--text-muted-ink)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
       <button class="logout-btn" id="logoutBtn">Log out</button>
     </div>
   </div>
@@ -460,11 +464,11 @@
         </div>
 
         <div class="field">
-          <label for="pimage">Property Photo</label>
+          <label for="pimages">Property Photos <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted-dark);font-size:11px;">(up to 8)</span></label>
           <div class="input-shell" style="padding:8px 13px;">
-            <input type="file" id="pimage" accept="image/*" style="font:inherit;font-size:13.5px;width:100%;border:none;background:transparent;outline:none;" />
+            <input type="file" id="pimages" name="images" accept="image/*" multiple style="font:inherit;font-size:13.5px;width:100%;border:none;background:transparent;outline:none;" />
           </div>
-          <img id="imagePreview" src="" alt="" style="display:none;margin-top:8px;width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--paper-dim);" />
+          <div id="imagePreviews" style="display:none;margin-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;"></div>
         </div>
 
         <div class="modal-actions">
@@ -480,6 +484,7 @@
     </div>
   </div>
 
+<script src="./js/toast.js"></script>
 <script>
   // ---- backend base — change once deployed ----
   const API_BASE = "https://smartnest-2zw0.onrender.com/api";
@@ -624,16 +629,21 @@
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
 
-  // ---------- image preview ----------
-  document.getElementById('pimage').addEventListener('change', function(){
-    const file = this.files[0];
-    const preview = document.getElementById('imagePreview');
-    if (file){
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = 'block';
-    } else {
-      preview.style.display = 'none';
-    }
+  // ---------- multi-image preview ----------
+  document.getElementById('pimages').addEventListener('change', function () {
+    const container = document.getElementById('imagePreviews');
+    container.innerHTML = '';
+    const files = Array.from(this.files).slice(0, 8);
+    if (files.length === 0) { container.style.display = 'none'; return; }
+    container.style.display = 'grid';
+    files.forEach((file, idx) => {
+      const url = URL.createObjectURL(file);
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;border:1.5px solid var(--paper-dim);background:#f0ede5;';
+      wrap.innerHTML = `<img src="${url}" alt="preview ${idx+1}" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        ${idx === 0 ? '<span style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:9px;font-weight:700;color:rgba(255,255,255,0.9);letter-spacing:.04em;text-shadow:0 1px 3px rgba(0,0,0,.5);">PRIMARY</span>' : ''}`;
+      container.appendChild(wrap);
+    });
   });
 
   // ---------- add property submit ----------
@@ -675,8 +685,8 @@
       formData.append('bedrooms',    payload.bedrooms);
       formData.append('area',        payload.area);
       formData.append('description', payload.description);
-      const imageFile = document.getElementById('pimage').files[0];
-      if (imageFile) formData.append('image', imageFile);
+      const imageFiles = document.getElementById('pimages').files;
+      Array.from(imageFiles).slice(0, 8).forEach(f => formData.append('images', f));
 
       const res = await fetch(url, {
         method,
@@ -688,9 +698,11 @@
 
       closeModal();
       loadProperties();
+      showToast(editingId ? 'Property updated!' : 'Property listed!', 'success');
     } catch (err){
       modalStatus.textContent = err.message;
       modalStatus.className = 'modal-status show error';
+      showToast(err.message, 'error');
     } finally{
       saveBtn.disabled = false;
       saveLabel.textContent = editingId ? "Update property" : "Save property";
@@ -709,12 +721,13 @@
         const data = await res.json().catch(() => ({}));
         throw new Error(data.message || "Couldn't delete this property.");
       }
+      showToast('Property removed', 'info');
       cardEl.style.transition = 'opacity .25s ease, transform .25s ease';
       cardEl.style.opacity = '0';
       cardEl.style.transform = 'scale(.95)';
       setTimeout(() => { cardEl.remove(); loadProperties(); }, 220);
     } catch (err){
-      alert(err.message);
+      showToast(err.message, 'error');
     }
   }
 </script>

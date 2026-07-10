@@ -1,0 +1,350 @@
+<!-- Property detail page — full info + image gallery + contact owner -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartNest — Property Details</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F2236;--ink-deep:#0A1928;--ink-card:#162A3A;
+    --line:rgba(78,122,156,0.22);--brass:#C98A35;--brass-dark:#A56F23;
+    --brass-dim:rgba(201,138,53,0.13);--brass-ln:rgba(201,138,53,0.35);
+    --paper:#F6F4EE;--paper-dim:#E9E5D8;
+    --ok:#3DAA6A;--ok-dim:rgba(61,170,106,0.12);--ok-ln:rgba(61,170,106,0.28);
+    --err:#B6493A;
+    --text-light:#E8EEF3;--text-muted:#9FB6C9;--text-dark:#1B2430;--text-dim:#6B7280;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Space Grotesk',sans-serif;background:var(--paper);color:var(--text-dark);min-height:100vh;}
+
+  /* TOPBAR */
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    background:var(--ink);color:var(--text-light);
+    padding:0 32px;height:56px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .brand{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--text-muted);}
+  .brand .dot{width:6px;height:6px;border-radius:50%;background:var(--brass);}
+  .back-btn{
+    display:flex;align-items:center;gap:6px;
+    background:none;border:1px solid rgba(255,255,255,0.1);
+    color:var(--text-muted);font:inherit;font-size:13px;font-weight:600;
+    padding:6px 14px;border-radius:7px;cursor:pointer;text-decoration:none;
+    transition:border-color .15s,color .15s;
+  }
+  .back-btn:hover{border-color:var(--brass);color:var(--brass);}
+  .back-btn svg{width:14px;height:14px;}
+
+  /* MAIN LAYOUT */
+  .page{max-width:1000px;margin:0 auto;padding:32px 24px 60px;}
+
+  /* GALLERY */
+  .gallery{border-radius:16px;overflow:hidden;background:var(--ink-card);margin-bottom:32px;position:relative;}
+  .gal-main{position:relative;height:420px;background:var(--ink-card);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .gal-main img{width:100%;height:100%;object-fit:cover;display:none;}
+  .gal-main img.active{display:block;}
+  .gal-main .no-img{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+  .gal-main .no-img svg{width:60px;height:60px;stroke:rgba(78,122,156,0.3);}
+  .gal-arrow{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(10,25,40,0.7);backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,0.1);color:var(--text-light);
+    font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:background .15s;z-index:5;
+  }
+  .gal-arrow:hover{background:rgba(201,138,53,0.7);}
+  .gal-prev{left:12px;}
+  .gal-next{right:12px;}
+  .gal-counter{
+    position:absolute;bottom:12px;right:12px;
+    background:rgba(10,25,40,0.7);backdrop-filter:blur(4px);
+    font-size:11px;font-weight:700;color:var(--text-muted);
+    padding:4px 10px;border-radius:4px;
+  }
+  .gal-thumbs{display:flex;gap:8px;padding:10px;overflow-x:auto;}
+  .gal-thumb{
+    width:70px;height:56px;border-radius:7px;flex-shrink:0;
+    object-fit:cover;cursor:pointer;opacity:0.55;
+    border:2px solid transparent;transition:opacity .15s,border-color .15s;
+  }
+  .gal-thumb.active{opacity:1;border-color:var(--brass);}
+
+  /* LAYOUT GRID */
+  .detail-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+
+  /* LEFT */
+  .detail-main{}
+  .prop-header{margin-bottom:20px;}
+  .prop-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--ok-dim);color:var(--ok);border:1px solid var(--ok-ln);
+    border-radius:4px;padding:3px 9px;margin-bottom:10px;
+  }
+  .prop-title{font-family:'Fraunces',serif;font-size:clamp(22px,4vw,30px);font-weight:700;color:var(--text-dark);line-height:1.2;margin-bottom:8px;text-wrap:balance;}
+  .prop-loc{font-size:14px;color:var(--text-dim);display:flex;align-items:center;gap:6px;}
+  .prop-loc svg{width:14px;height:14px;stroke:var(--text-dim);flex-shrink:0;}
+
+  /* stats row */
+  .stats-row{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--paper-dim);border:1px solid var(--paper-dim);
+    border-radius:12px;overflow:hidden;margin-bottom:24px;
+  }
+  .stat-box{background:white;padding:16px 14px;text-align:center;}
+  .stat-box .sv{font-size:20px;font-weight:700;color:var(--text-dark);margin-bottom:2px;font-variant-numeric:tabular-nums;}
+  .stat-box .sl{font-size:11px;color:var(--text-dim);letter-spacing:.03em;}
+
+  /* description */
+  .desc-section{margin-bottom:24px;}
+  .sec-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;}
+  .desc-text{font-size:14px;color:var(--text-dark);line-height:1.7;white-space:pre-line;}
+  .desc-text.empty{color:var(--text-dim);font-style:italic;}
+
+  /* RIGHT SIDEBAR */
+  .sidebar{}
+  .price-card{
+    background:var(--ink);border-radius:14px;padding:24px;margin-bottom:16px;
+  }
+  .price-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .price-val{font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:var(--brass);font-variant-numeric:tabular-nums;}
+  .price-note{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+  .contact-card{
+    background:white;border:1px solid var(--paper-dim);border-radius:14px;padding:20px;
+  }
+  .contact-card h3{font-size:15px;font-weight:700;margin-bottom:6px;}
+  .contact-card p{font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:16px;}
+  .contact-btn-main{
+    width:100%;border:none;border-radius:9px;
+    background:var(--ink);color:var(--text-light);
+    font:inherit;font-size:14px;font-weight:700;
+    padding:13px;cursor:pointer;transition:background .15s;margin-bottom:10px;
+  }
+  .contact-btn-main:hover{background:var(--ink-deep);}
+  .contact-info{display:none;flex-direction:column;gap:10px;margin-top:4px;}
+  .contact-info.show{display:flex;}
+  .cinfo-row{
+    display:flex;align-items:center;gap:10px;
+    background:var(--paper);border:1px solid var(--paper-dim);
+    border-radius:8px;padding:11px 13px;
+  }
+  .cinfo-row svg{width:15px;height:15px;stroke:var(--brass);flex-shrink:0;}
+  .cinfo-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px;}
+  .cinfo-val{font-size:13px;font-weight:600;color:var(--text-dark);word-break:break-all;}
+  .login-note{font-size:12.5px;color:var(--text-dim);text-align:center;margin-top:8px;}
+  .login-note a{color:var(--brass);font-weight:600;}
+
+  /* loading / error */
+  .loading-state{padding:80px 24px;text-align:center;color:var(--text-dim);font-size:14px;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner{width:32px;height:32px;border:3px solid var(--paper-dim);border-top-color:var(--brass);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+
+  /* MODAL overlay for contact */
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(10,25,40,0.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;}
+  .overlay.show{display:flex;}
+  .modal{background:white;border-radius:16px;width:100%;max-width:420px;padding:28px;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .modal-head h3{font-family:'Fraunces',serif;font-weight:500;font-size:20px;}
+  .close-x{background:none;border:none;cursor:pointer;color:var(--text-dim);width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;}
+  .close-x:hover{background:var(--paper-dim);}
+  .close-x svg{width:16px;height:16px;}
+  .modal-rows{display:flex;flex-direction:column;gap:8px;}
+  .modal-row{display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--paper-dim);border-radius:8px;padding:12px 14px;}
+  .modal-row svg{width:16px;height:16px;stroke:var(--brass);flex-shrink:0;}
+  .mrow-lbl{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+  .mrow-val{font-size:13.5px;font-weight:600;color:var(--text-dark);}
+  .modal-note{margin-top:14px;font-size:12.5px;color:var(--text-dim);line-height:1.5;}
+
+  @media(max-width:700px){
+    .detail-layout{grid-template-columns:1fr;}
+    .sidebar{order:-1;}
+    .stats-row{grid-template-columns:repeat(2,1fr);}
+    .gal-main{height:260px;}
+    .page{padding:20px 16px 48px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>SmartNest</div>
+  <a href="browse-properties.html" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to browse
+  </a>
+</div>
+
+<div class="page" id="pageContent">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    Loading property…
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Contact Owner</h3>
+      <button class="close-x" id="closeModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+    <div class="modal-rows" id="modalRows"></div>
+    <p class="modal-note">SmartNest connects you directly — no middleman, no commission.</p>
+  </div>
+</div>
+
+<script src="./js/toast.js"></script>
+<script>
+  const API = "https://smartnest-2zw0.onrender.com/api";
+  const API_ROOT = "https://smartnest-2zw0.onrender.com";
+  const token   = localStorage.getItem('smartnest_token')  || sessionStorage.getItem('smartnest_token');
+  const userRaw = localStorage.getItem('smartnest_user')   || sessionStorage.getItem('smartnest_user');
+  const me      = userRaw ? JSON.parse(userRaw) : null;
+
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { document.getElementById('pageContent').innerHTML = '<div class="loading-state">No property ID found. <a href="browse-properties.html">Go back</a></div>'; }
+
+  let currentProp = null;
+  let galIdx = 0;
+  let images = [];
+
+  function renderPage(p) {
+    currentProp = p;
+    images = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+
+    const galHtml = images.length ? `
+      <div class="gal-main" id="galMain">
+        ${images.map((img, i) => `<img src="${API_ROOT}${img}" alt="${p.title}" loading="lazy" class="${i===0?'active':''}" data-idx="${i}"/>`).join('')}
+        ${images.length > 1 ? `<button class="gal-arrow gal-prev" id="galPrev">&#8249;</button><button class="gal-arrow gal-next" id="galNext">&#8250;</button>` : ''}
+        ${images.length > 1 ? `<div class="gal-counter" id="galCounter">1 / ${images.length}</div>` : ''}
+      </div>
+      ${images.length > 1 ? `<div class="gal-thumbs">${images.map((img,i) => `<img class="gal-thumb ${i===0?'active':''}" src="${API_ROOT}${img}" data-idx="${i}" alt=""/>`).join('')}</div>` : ''}
+    ` : `
+      <div class="gal-main">
+        <div class="no-img"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M3 11L12 4l9 7M5 10v10h14V10"/></svg></div>
+      </div>
+    `;
+
+    const statsHtml = `
+      <div class="stats-row">
+        <div class="stat-box"><div class="sv">${p.bedrooms || '—'}</div><div class="sl">Bedrooms</div></div>
+        <div class="stat-box"><div class="sv">${p.bathrooms || '—'}</div><div class="sl">Bathrooms</div></div>
+        <div class="stat-box"><div class="sv">${p.area ? p.area + ' sqft' : '—'}</div><div class="sl">Area</div></div>
+        <div class="stat-box"><div class="sv">Active</div><div class="sl">Status</div></div>
+      </div>`;
+
+    document.getElementById('pageContent').innerHTML = `
+      <div class="gallery">${galHtml}</div>
+      <div class="detail-layout">
+        <div class="detail-main">
+          <div class="prop-header">
+            <div class="prop-badge">Active Listing</div>
+            <div class="prop-title">${p.title || 'Untitled Property'}</div>
+            <div class="prop-loc">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              ${p.location || 'Location not set'}
+            </div>
+          </div>
+          ${statsHtml}
+          <div class="desc-section">
+            <div class="sec-label">Description</div>
+            <div class="desc-text ${!p.description?'empty':''}">${p.description || 'No description provided by the owner.'}</div>
+          </div>
+        </div>
+        <div class="sidebar">
+          <div class="price-card">
+            <div class="price-label">Listed price</div>
+            <div class="price-val">₹${Number(p.price||0).toLocaleString('en-IN')}</div>
+            <div class="price-note">Direct from owner — no brokerage</div>
+          </div>
+          <div class="contact-card">
+            <h3>Interested?</h3>
+            <p>Contact the owner directly — no broker, no commission.</p>
+            <button class="contact-btn-main" id="contactBtn">Get Owner's Contact</button>
+            <p class="login-note" id="loginNote" style="display:none;">
+              <a href="login.html">Log in</a> to see contact details.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.title = `SmartNest — ${p.title || 'Property'}`;
+    setupGallery();
+    setupContact(p);
+  }
+
+  function setupGallery() {
+    if (images.length <= 1) return;
+    const imgs = document.querySelectorAll('.gal-main img');
+    const thumbs = document.querySelectorAll('.gal-thumb');
+    const counter = document.getElementById('galCounter');
+
+    function goTo(idx) {
+      imgs.forEach(i => i.classList.remove('active'));
+      thumbs.forEach(t => t.classList.remove('active'));
+      galIdx = (idx + images.length) % images.length;
+      imgs[galIdx].classList.add('active');
+      if (thumbs[galIdx]) thumbs[galIdx].classList.add('active');
+      if (counter) counter.textContent = (galIdx+1) + ' / ' + images.length;
+    }
+
+    document.getElementById('galPrev').addEventListener('click', () => goTo(galIdx - 1));
+    document.getElementById('galNext').addEventListener('click', () => goTo(galIdx + 1));
+    thumbs.forEach(t => t.addEventListener('click', () => goTo(Number(t.dataset.idx))));
+  }
+
+  function setupContact(p) {
+    const btn = document.getElementById('contactBtn');
+    const note = document.getElementById('loginNote');
+    if (!token) {
+      btn.style.display = 'none';
+      note.style.display = 'block';
+      return;
+    }
+    btn.addEventListener('click', () => {
+      const owner = p.owner || {};
+      document.getElementById('modalRows').innerHTML = `
+        <div class="modal-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <div><div class="mrow-lbl">Property</div><div class="mrow-val">${p.title || 'N/A'}</div></div>
+        </div>
+        <div class="modal-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div><div class="mrow-lbl">Owner</div><div class="mrow-val">${owner.name || 'Owner'}</div></div>
+        </div>
+        <div class="modal-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div><div class="mrow-lbl">Email</div><div class="mrow-val">${owner.email || 'Not available'}</div></div>
+        </div>`;
+      document.getElementById('overlay').classList.add('show');
+    });
+  }
+
+  document.getElementById('closeModal').addEventListener('click', () => document.getElementById('overlay').classList.remove('show'));
+  document.getElementById('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') document.getElementById('overlay').classList.remove('show'); });
+
+  // Fetch property
+  if (id) {
+    fetch(API + '/property/' + id)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.property) renderPage(data.property);
+        else document.getElementById('pageContent').innerHTML = '<div class="loading-state">Property not found. <a href="browse-properties.html" style="color:var(--brass);">Go back</a></div>';
+      })
+      .catch(() => {
+        document.getElementById('pageContent').innerHTML = '<div class="loading-state">Could not load property. <a href="browse-properties.html" style="color:var(--brass);">Go back</a></div>';
+      });
+  }
+</script>
+</body>
+</html>
