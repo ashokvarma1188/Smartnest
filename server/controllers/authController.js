@@ -3,19 +3,8 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// ✦ NEW — nodemailer setup (added for OTP emails)
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: { rejectUnauthorized: false }
-});
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 // Register User
 const registerUser = async (req, res) => {
   try {
@@ -167,9 +156,9 @@ const sendOtp = async (req, res) => {
     user.otpExpiry = otpExpiry;
     await user.save();
 
-    // Send OTP to user's email
-    await transporter.sendMail({
-      from: `"SmartNest" <${process.env.EMAIL_USER}>`,
+    // Send OTP to user's email via Resend
+    await resend.emails.send({
+      from: "SmartNest <onboarding@resend.dev>",
       to: email,
       subject: "SmartNest — Your Password Reset OTP",
       html: `
