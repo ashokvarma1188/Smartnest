@@ -1,94 +1,97 @@
-# 🏠 SmartNest — Direct Property, No Broker
+<div align="center">
 
-> A full-stack real estate platform where owners list directly and buyers connect — no broker, no commission, no middleman.
+<h1>🏠 SmartNest</h1>
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+<p>A full-stack real estate platform where owners list properties and buyers find their dream home — <strong>no broker, no commission.</strong></p>
 
----
+[![Live Demo](https://img.shields.io/badge/🔗_Live_Demo-Visit_Site-C98A35?style=for-the-badge)](https://smartnest-2zw0.onrender.com)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
 
-## 💡 The Problem SmartNest Solves
-
-In India, buying or renting a property usually means dealing with a broker who stands between owner and buyer — and charges commission from both sides.
-
-| Without SmartNest | With SmartNest |
-|---|---|
-| Owner → Broker → Buyer | Owner → Buyer (Direct) |
-| Owner pays commission | Zero commission |
-| Buyer pays extra money | Buyer pays only property price |
-| Broker controls information | Full transparency |
-
-**SmartNest removes the broker completely.**
+</div>
 
 ---
 
 ## ✨ Features
 
-### For Property Owners
-- 🔐 Secure Register and Login with JWT Authentication
-- 🏡 Add Properties with title, price, location, bedrooms, area, description, and photo
-- ✏️ Edit Property details anytime
-- 🗑️ Delete Property listings
-- 📊 Owner Dashboard showing all listings at a glance
-
-### For Buyers
-- 🔍 Browse All Properties in one clean page
-- 🔎 Live Search by title or location
-- 📞 Contact Owner Directly — see real owner name and email, no broker involved
-
-### Security
-- 🔑 JWT-based authentication
-- 🛡️ Protected routes — only logged-in owners can add, edit, delete
-- 🔒 Forgot Password — reset password with email
-- 🧂 Passwords hashed with bcrypt
-
-### Extra
-- 📸 Photo Upload for each property
-- 👤 Role-based access — Owner dashboard vs Buyer browse page
+| Feature | Description |
+|---|---|
+| 🔐 JWT Auth | Secure login & registration with token-based auth |
+| 🔵 Google OAuth 2.0 | One-click sign-in with Google via Passport.js |
+| 📧 OTP Password Reset | 6-digit OTP sent to email using Resend API |
+| 🏡 Property Listings | Owners add, edit, delete listings with up to 8 images |
+| 🔍 Search & Filter | Filter by location, price range, and bedrooms |
+| ❤️ Save Properties | Buyers save favourite properties locally |
+| 🖼️ Image Gallery | Full gallery with thumbnail navigation on detail page |
+| 👥 Role-Based Access | Separate dashboards for Owners and Buyers |
+| 📱 Responsive | Works on mobile and desktop |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | HTML5, CSS3, Vanilla JavaScript |
-| Backend | Node.js, Express.js |
-| Database | MongoDB Atlas |
-| Authentication | JWT (JSON Web Tokens) |
-| Password Hashing | bcryptjs |
-| File Upload | Multer |
+<table>
+<tr>
+<td valign="top" width="33%">
+
+### Frontend
+- HTML5, CSS3
+- Vanilla JavaScript
+- Google Fonts
+- (Fraunces + Space Grotesk)
+
+</td>
+<td valign="top" width="33%">
+
+### Backend
+- Node.js + Express.js
+- MongoDB Atlas + Mongoose
+- JWT + bcryptjs
+- Passport.js (Google OAuth)
+- Multer (image uploads)
+- Resend API (OTP emails)
+
+</td>
+<td valign="top" width="33%">
+
+### Deployment
+- Backend → Render
+- Database → MongoDB Atlas
+- Auth → Google Cloud Console
+- Email → Resend
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## 📁 Project Structure
 
-    SmartNest/
-    ├── frontend/
-    │   ├── index.html
-    │   ├── login.html
-    │   ├── register.html
-    │   ├── forgot-password.html
-    │   ├── add-property.html
-    │   └── browse-properties.html
-    │
-    └── server/
-        ├── server.js
-        ├── config/db.js
-        ├── models/
-        │   ├── user.js
-        │   └── property.js
-        ├── controllers/
-        │   ├── authController.js
-        │   └── propertyController.js
-        ├── middleware/
-        │   └── authMiddleware.js
-        ├── routes/
-        │   ├── authRoutes.js
-        │   └── propertyRoutes.js
-        └── uploads/
+```
+SmartNest/
+│
+├── 📂 frontend/
+│   ├── 📄 index.html               ← Landing page
+│   ├── 📄 login.html               ← Login
+│   ├── 📄 register.html            ← Register
+│   ├── 📄 browse-properties.html   ← Buyer dashboard
+│   ├── 📄 add-property.html        ← Owner dashboard
+│   ├── 📄 property-detail.html     ← Property detail + gallery
+│   ├── 📄 profile.html             ← User profile
+│   ├── 📄 forgot-password.html     ← OTP password reset
+│   ├── 📂 css/                     ← Separate CSS per page
+│   └── 📂 js/                      ← Separate JS per page
+│
+└── 📂 server/
+    ├── 📂 controllers/             ← Business logic
+    ├── 📂 models/                  ← MongoDB schemas
+    ├── 📂 routes/                  ← API endpoints
+    ├── 📂 middleware/              ← Auth middleware
+    ├── 📂 config/                  ← DB + Passport config
+    └── 📂 uploads/                 ← Uploaded property images
+```
 
 ---
 
@@ -99,69 +102,105 @@ In India, buying or renting a property usually means dealing with a broker who s
 |---|---|---|
 | POST | `/api/auth/register` | Register new user |
 | POST | `/api/auth/login` | Login and get JWT token |
-| POST | `/api/auth/reset-password` | Reset user password |
+| GET | `/api/auth/google` | Google OAuth login |
+| POST | `/api/auth/send-otp` | Send OTP to email |
+| POST | `/api/auth/verify-otp` | Verify OTP |
+| POST | `/api/auth/reset-password` | Set new password |
 
 ### Properties
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | GET | `/api/property/all` | No | Get all properties |
+| GET | `/api/property/:id` | No | Get single property |
 | POST | `/api/property/add` | Owner | Add new property |
 | PUT | `/api/property/:id` | Owner | Update property |
 | DELETE | `/api/property/:id` | Owner | Delete property |
 
 ---
 
-## ⚙️ Setup and Installation
+## 🔄 How It Works
 
-**1. Clone the repository**
+**Login / Auth Flow:**
 
-    git clone https://github.com/ashokvarma1188/SmartNest.git
-    cd SmartNest/server
-    npm install
+```
+User Registers / Logs In
+        ↓
+Server verifies credentials → creates JWT token
+        ↓
+Token stored in localStorage
+        ↓
+Every API request sends token in Authorization header
+        ↓
+Server middleware verifies token → allows or rejects
+```
 
-**2. Create `.env` inside `server/` folder**
+**Forgot Password (OTP Flow):**
 
-    PORT=4000
-    MONGO_URI=your_mongodb_connection_string
-    JWT_SECRET=your_secret_key
-
-**3. Start the server**
-
-    node server.js
-
-**4. Open the frontend**
-
-Open `frontend/login.html` with Live Server in VS Code.
-
----
-
-## 🎯 Why I Built This
-
-Broker commission is a real problem in India's real estate market. Both owners and buyers end up paying extra money to a middleman who simply connects two parties.
-
-SmartNest solves this by building a platform where:
-- **Owners list properties themselves** — full control, no commission
-- **Buyers browse and contact directly** — pay only the actual property price
-- **No broker. No commission. No middleman.**
+```
+User enters email → Server generates 6-digit OTP
+        ↓
+OTP sent via Resend API (HTTP, not SMTP)
+        ↓
+User enters OTP → Server verifies match + expiry
+        ↓
+User sets new password → saved as bcrypt hash
+```
 
 ---
 
-## 🔮 Future Features
+## 🚀 Run Locally
 
-- [ ] AI-based price prediction for buyers
-- [ ] Neighborhood score — safety, schools, transport
-- [ ] Multiple property images per listing
-- [ ] Filter search by price range and bedrooms
-- [ ] Deploy to cloud — Render + Vercel
+```bash
+# 1. Clone the repo
+git clone https://github.com/ashokvarma1188/Smartnest.git
+
+# 2. Install dependencies
+cd server
+npm install
+
+# 3. Create server/.env file
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_secret_key
+RESEND_API_KEY=your_resend_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SESSION_SECRET=your_session_secret
+
+# 4. Start the server
+npm start
+```
+
+> Frontend is plain HTML — open any `.html` file in browser or use **Live Server** extension in VS Code.
 
 ---
 
-## 👨‍💻 Author
+## 📌 Pages Overview
 
-**Ashok Varma**
-
-GitHub: [@ashokvarma1188](https://github.com/ashokvarma1188)
+| Page | Role | What it does |
+|---|---|---|
+| `/index.html` | Everyone | Landing page with featured listings |
+| `/register.html` | Everyone | Create account as Owner or Buyer |
+| `/login.html` | Everyone | Login with email or Google |
+| `/browse-properties.html` | Buyer | Browse, search, filter, save properties |
+| `/add-property.html` | Owner | Add, edit, delete your listings |
+| `/property-detail.html` | Everyone | Full property view + contact owner |
+| `/profile.html` | Logged in | View profile + change password |
+| `/forgot-password.html` | Everyone | Reset password via OTP |
 
 ---
 
-> *SmartNest — Because the deed should change hands directly.*
+## 💡 Real Problem I Solved During Development
+
+> While deploying on Render, OTP emails stopped working. After checking the logs, I found that **Render's free plan blocks all SMTP ports (465 and 587)**. I was using Nodemailer with Gmail SMTP. I researched alternatives and switched to **Resend API** which uses HTTP instead of SMTP — this fixed the issue completely.
+
+---
+
+<div align="center">
+
+### Built with ❤️ by Ashok Varma
+
+*Final Year Student | Full Stack Developer*
+
+[![GitHub](https://img.shields.io/badge/GitHub-ashokvarma1188-181717?style=for-the-badge&logo=github)](https://github.com/ashokvarma1188)
+
+</div>
