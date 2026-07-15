@@ -1,0 +1,15 @@
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  background:#0F2236;color:#E8EEF3;
+}
+.box{text-align:center;}
+.spinner{
+  width:44px;height:44px;border:3px solid rgba(201,138,53,0.25);
+  border-top-color:#C98A35;border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 20px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.msg{font-size:16px;font-weight:600;color:#C98A35;}
+.sub{font-size:13px;color:#9FB6C9;margin-top:6px;}
