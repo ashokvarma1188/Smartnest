@@ -100,8 +100,8 @@ What happens:
      Role is buyer? → redirect to browse-properties.html
 
 Key code:
-  storage.setItem('smartnest_token', data.token)   ← save token
-  storage.setItem('smartnest_user', JSON.stringify(data.user)) ← save user
+  storage.setItem('smartnest_token', data.token)
+  storage.setItem('smartnest_user', JSON.stringify(data.user))
 
 Remember Me checked   → localStorage  (stays even after closing browser)
 Remember Me unchecked → sessionStorage (deleted when tab closes)
@@ -148,14 +148,12 @@ What user sees: Form to add property, list of own properties, edit/delete button
 What happens:
   ADD:
     1. Owner fills title, price, location, bedrooms, images → submit
-    2. add-property.js sends POST /api/property/add with token in header
-    3. Middleware checks token → allowed → saves property to DB
-    4. Images saved in server/uploads/ folder
+    2. Sends POST /api/property/add with JWT token in header
+    3. Middleware checks token → allowed → saves property + images to DB
 
   EDIT:
     1. Owner clicks Edit → form fills with existing data
-    2. Owner changes fields → submit
-    3. Sends PUT /api/property/:id
+    2. Owner changes fields → submit → PUT /api/property/:id
 
   DELETE:
     1. Owner clicks Delete → confirm dialog
@@ -165,7 +163,6 @@ File: frontend/js/add-property.js
 APIs: POST /api/property/add
       PUT  /api/property/:id
       DELETE /api/property/:id
-      GET  /api/property/all (to show owner's own listings)
 Protected: YES (needs JWT token)
 ```
 
@@ -178,8 +175,7 @@ What happens:
   1. URL has ?id=xxxxx
   2. property-detail.js reads id from URL
   3. Fetches GET /api/property/:id
-  4. Displays all images in gallery
-  5. User clicks thumbnails → main image changes
+  4. Displays all images in gallery with thumbnail navigation
 
 File: frontend/js/property-detail.js
 API: GET /api/property/:id
@@ -193,8 +189,7 @@ What user sees: Name, email, role displayed. Change password form.
 What happens:
   1. Page loads → reads smartnest_user from localStorage → displays info
   2. User fills old password + new password → submit
-  3. Calls POST /api/auth/reset-password with email + new password
-  4. Password updated in DB (bcrypt hash)
+  3. Calls POST /api/auth/reset-password
 
 File: frontend/js/profile.js
 API: POST /api/auth/reset-password
@@ -202,31 +197,24 @@ API: POST /api/auth/reset-password
 
 ---
 
-### Page 8 — forgot-password.html (OTP Reset)
+### Page 8 — forgot-password.html (OTP Reset — 3 Steps)
 ```
-What user sees: 3-step form → Email → OTP boxes → New Password
-What happens:
-  STEP 1 — Enter Email:
-    → POST /api/auth/send-otp
-    → Backend generates 6-digit OTP, saves to DB with 10min expiry
-    → Resend API sends OTP to email
+STEP 1 — Enter Email:
+  → POST /api/auth/send-otp
+  → Backend generates 6-digit OTP, saves to DB with 10min expiry
+  → Resend API sends OTP to email
 
-  STEP 2 — Enter OTP:
-    → POST /api/auth/verify-otp
-    → Backend checks: OTP match? + not expired?
-    → Success → clear OTP from DB → go to step 3
+STEP 2 — Enter OTP:
+  → POST /api/auth/verify-otp
+  → Backend checks: OTP match? + not expired?
+  → Success → clear OTP from DB → go to step 3
+  → 10 minute countdown timer shown, Resend button appears on expire
 
-  STEP 3 — Set New Password:
-    → POST /api/auth/reset-password
-    → Backend bcrypt.hash(newPassword) → save to DB
-
-Timer: 10 minute countdown bar shown on step 2
-Resend button: appears when timer expires
+STEP 3 — Set New Password:
+  → POST /api/auth/reset-password
+  → Backend bcrypt.hash(newPassword) → save to DB
 
 File: frontend/js/forgot-password.js
-APIs: POST /api/auth/send-otp
-      POST /api/auth/verify-otp
-      POST /api/auth/reset-password
 ```
 
 ---
@@ -236,9 +224,8 @@ APIs: POST /api/auth/send-otp
 What user sees: Spinner (loading screen) for 1-2 seconds
 What happens:
   1. After Google login, backend redirects here with token in URL
-     Example: auth-callback.html?token=eyJ...&user={...}
   2. auth-callback.js reads token from URL
-  3. Saves token to localStorage
+  3. Saves token + user to localStorage
   4. Reads user role → redirects to correct dashboard
 
 File: frontend/js/auth-callback.js
@@ -249,47 +236,30 @@ File: frontend/js/auth-callback.js
 ## PART 3 — BACKEND FILES EXPLAINED
 
 ### server.js — Starting Point
-```js
-What it does: Creates the Express app and connects everything
-
-Step by step:
-1. dotenv.config()     → loads .env file (reads secret keys)
-2. connectDB()         → connects to MongoDB Atlas
-3. app.use(cors())     → allows frontend to call backend
-4. app.use(express.json()) → reads JSON from request body
-5. app.use(session())  → needed for Google OAuth
-6. app.use(passport)   → starts Google OAuth
-7. app.use('/uploads') → serves uploaded images as static files
-8. app.use("/api/auth") → connects auth routes
-9. app.use("/api/property") → connects property routes
-10. app.listen(4000)   → starts server on port 4000
 ```
-
----
-
-### config/db.js — MongoDB Connection
-```js
-What it does: Connects your server to MongoDB Atlas cloud database
-
-mongoose.connect(process.env.MONGO_URI)
-→ MONGO_URI is the secret link to your MongoDB database
-→ Stored in .env file (never pushed to GitHub)
-→ If connection fails → process.exit(1) → server stops
+1. dotenv.config()         → loads .env file (reads secret keys)
+2. connectDB()             → connects to MongoDB Atlas
+3. app.use(cors())         → allows frontend to call backend
+4. app.use(express.json()) → reads JSON from request body
+5. app.use(session())      → needed for Google OAuth
+6. app.use(passport)       → starts Google OAuth
+7. app.use('/uploads')     → serves uploaded images as static files
+8. app.use("/api/auth")    → connects auth routes
+9. app.use("/api/property")→ connects property routes
+10. app.listen(4000)       → starts server on port 4000
 ```
 
 ---
 
 ### models/user.js — User Schema
-```js
-What it does: Defines what a User document looks like in MongoDB
-
+```
 Fields saved for every user:
   name      → String, required
   email     → String, required, unique (no two same emails)
-  password  → String, required (stored as bcrypt hash, never plain text)
+  password  → String (stored as bcrypt hash, NEVER plain text)
   role      → "buyer" or "owner" (default: buyer)
-  otp       → 6-digit OTP string (null when not resetting password)
-  otpExpiry → Date when OTP expires (null when not resetting password)
+  otp       → 6-digit string (null when not resetting password)
+  otpExpiry → Date when OTP expires (null when not resetting)
   createdAt → auto added by timestamps: true
   updatedAt → auto added by timestamps: true
 ```
@@ -297,9 +267,7 @@ Fields saved for every user:
 ---
 
 ### models/property.js — Property Schema
-```js
-What it does: Defines what a Property document looks like in MongoDB
-
+```
 Fields saved for every property:
   title       → property name
   description → about the property
@@ -308,235 +276,368 @@ Fields saved for every property:
   bedrooms    → number
   bathrooms   → number
   area        → square feet
-  image       → first image path (e.g. /uploads/abc.jpg)
-  images      → array of all image paths [ "/uploads/a.jpg", "/uploads/b.jpg" ]
-  owner       → ObjectId linking to User who created it
+  image       → first image path (/uploads/abc.jpg)
+  images      → array of all image paths
+  owner       → links to User who created it (ObjectId)
   createdAt   → auto timestamp
 ```
 
 ---
 
-### controllers/authController.js — Auth Logic
-```js
-What it does: All login/register/OTP functions
-
-registerUser:
-  → check if email exists → if yes, return error
-  → bcrypt.hash(password, 10) → hash the password
-  → User.create({ name, email, hashedPassword, role }) → save to DB
-  → return success
-
-loginUser:
-  → User.findOne({ email }) → find user in DB
-  → bcrypt.compare(password, user.password) → check password
-  → jwt.sign({ id, role }, SECRET, { expiresIn: "7d" }) → create token
-  → return token + user
-
-sendOtp:
-  → User.findOne({ email }) → user must exist
-  → Math.floor(100000 + Math.random() * 900000) → generate 6-digit OTP
-  → new Date(Date.now() + 10 * 60 * 1000) → expiry = now + 10 minutes
-  → save OTP + expiry to user in DB
-  → resend.emails.send() → send OTP to user email
-
-verifyOtp:
-  → User.findOne({ email })
-  → user.otp !== otp → wrong OTP → error
-  → new Date() > user.otpExpiry → expired → error
-  → Both pass → clear OTP from DB → success
-
-resetPassword:
-  → User.findOne({ email })
-  → bcrypt.hash(newPassword, 10)
-  → user.password = hashedPassword → user.save()
-```
-
----
-
-### controllers/propertyController.js — Property Logic
-```js
-What it does: Add/Get/Edit/Delete property functions
-
-addProperty:
-  → req.files → get uploaded images from Multer
-  → imagePaths = files.map(f => '/uploads/' + f.filename)
-  → Property.create({ title, price, location, images, owner: req.user.id })
-
-getAllProperties:
-  → Property.find() → get all properties from DB
-  → .populate('owner', 'name email') → also get owner's name + email
-
-getPropertyById:
-  → Property.findById(req.params.id) → find one property by ID in URL
-
-updateProperty:
-  → Property.findByIdAndUpdate(id, newData, { new: true })
-
-deleteProperty:
-  → Property.findByIdAndDelete(id)
-```
-
----
-
-### middleware/authMiddleware.js — JWT Check
-```js
-What it does: Runs BEFORE any protected route. Checks if user is logged in.
-
-Step by step:
-1. Read token from request header: req.headers.authorization
-2. Token not found? → 401 Unauthorized → stop here
-3. jwt.verify(token, SECRET) → check if valid
-4. Decoded = { id, role } → set as req.user
-5. next() → go to the actual controller
-
-Where it is used:
-  POST /api/property/add    → only logged in users can add
-  PUT  /api/property/:id    → only logged in users can edit
-  DELETE /api/property/:id  → only logged in users can delete
-```
-
----
-
 ### routes/authRoutes.js — Auth URLs
-```js
-POST /api/auth/register      → registerUser
-POST /api/auth/login         → loginUser
-POST /api/auth/send-otp      → sendOtp
-POST /api/auth/verify-otp    → verifyOtp
+```
+POST /api/auth/register       → registerUser
+POST /api/auth/login          → loginUser
+POST /api/auth/send-otp       → sendOtp
+POST /api/auth/verify-otp     → verifyOtp
 POST /api/auth/reset-password → resetPassword
 ```
 
 ---
 
 ### routes/propertyRoutes.js — Property URLs
-```js
-GET    /api/property/all   → getAllProperties  (no auth needed)
-GET    /api/property/:id   → getPropertyById   (no auth needed)
-POST   /api/property/add   → addProperty       (needs JWT token)
-PUT    /api/property/:id   → updateProperty    (needs JWT token)
-DELETE /api/property/:id   → deleteProperty    (needs JWT token)
+```
+GET    /api/property/all  → getAllProperties  (no auth needed)
+GET    /api/property/:id  → getPropertyById   (no auth needed)
+POST   /api/property/add  → addProperty       (needs JWT token)
+PUT    /api/property/:id  → updateProperty    (needs JWT token)
+DELETE /api/property/:id  → deleteProperty    (needs JWT token)
 ```
 
 ---
 
-## PART 4 — HOW REQUEST FLOWS (Full Picture)
+## PART 4 — HOW A REQUEST FLOWS
 
-### Normal Login Flow
+### Login Flow
 ```
-Browser (login.html)
-    ↓  POST /api/auth/login { email, password }
-server.js receives request
-    ↓  app.use("/api/auth", authRoutes)
-authRoutes.js
-    ↓  router.post("/login", loginUser)
-authController.js → loginUser()
-    ↓  User.findOne({ email })        → check MongoDB
-    ↓  bcrypt.compare(pw, hash)       → check password
-    ↓  jwt.sign({ id, role }, SECRET) → create token
-    ↓  res.json({ token, user })
-Browser receives token
-    ↓  localStorage.setItem("smartnest_token", token)
-    ↓  redirect to dashboard
+Browser → POST /api/auth/login { email, password }
+  → authRoutes.js → loginUser()
+  → User.findOne({ email })     check DB
+  → bcrypt.compare(pw, hash)    check password
+  → jwt.sign({ id, role })      create token
+  → res.json({ token, user })
+Browser → localStorage.setItem("smartnest_token", token)
+        → redirect to dashboard
 ```
-
----
 
 ### Protected Route Flow (Add Property)
 ```
-Browser (add-property.html)
-    ↓  POST /api/property/add
-       Headers: { Authorization: "Bearer eyJ..." }
-       Body: { title, price, location, images }
-server.js
-    ↓  app.use("/api/property", propertyRoutes)
-propertyRoutes.js
-    ↓  router.post("/add", protect, addProperty)
-                           ↑
-                    middleware runs FIRST
-authMiddleware.js → protect()
-    ↓  jwt.verify(token, SECRET) → decoded = { id, role }
-    ↓  req.user = decoded
-    ↓  next()  → go to addProperty
-propertyController.js → addProperty()
-    ↓  req.user.id → who is adding
-    ↓  req.files   → images from Multer
-    ↓  Property.create({ ...data, owner: req.user.id })
-    ↓  res.json({ success: true, property })
-Browser shows success message
+Browser → POST /api/property/add
+          Header: Authorization: Bearer eyJ...
+  → propertyRoutes.js → protect middleware runs FIRST
+  → jwt.verify(token, SECRET) → decoded = { id, role }
+  → req.user = decoded → next()
+  → addProperty() runs
+  → Property.create({ ...data, owner: req.user.id })
+  → res.json({ success: true })
 ```
 
 ---
 
-## PART 5 — KEY CONCEPTS SUMMARY
+## PART 5 — CONCEPTS LEARNED IN DETAIL
 
-### JWT
-```
-jwt.sign({ id, role }, SECRET, { expiresIn: "7d" })  → create token (login)
-jwt.verify(token, SECRET)                              → verify token (every request)
-Token stored in: localStorage ("smartnest_token")
-Token sent in:   Authorization header of every API call
-```
+---
 
-### bcrypt
-```
-bcrypt.hash(password, 10)           → convert password to hash (register)
-bcrypt.compare(password, hash)      → check password on login
-Salt rounds = 10 → hashes 1024 times → cannot be reversed
-```
+### 1. JWT — JSON Web Token
 
-### Mongoose
+**Simple idea — Hotel key card:**
 ```
-User.findOne({ email })             → find one user
-User.create({ name, email... })     → create new user
-user.save()                         → save changes to existing user
-Property.find()                     → get all properties
-Property.findById(id)               → get one property
-Property.findByIdAndUpdate(id, data)→ update property
-Property.findByIdAndDelete(id)      → delete property
-.populate('owner', 'name email')    → get owner's details from User collection
+Check in at hotel  → hotel gives KEY CARD
+Go to your room    → swipe card → door opens
+Check out          → card stops working
+
+User logs in       → server gives TOKEN
+User opens page    → send token → server allows
+Token expires      → user must login again
 ```
 
-### async/await + try/catch
+**What JWT looks like:**
+```
+eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEyMyIsInJvbGUiOiJvd25lciJ9.xK9sd2PlmN
+   HEADER                    PAYLOAD                           SIGNATURE
+```
+
+**Your code — Creating token (login):**
 ```js
-const registerUser = async (req, res) => {  // async = this function has await inside
+const token = jwt.sign(
+  { id: user._id, role: user.role },  // data you store inside token
+  process.env.JWT_SECRET,              // secret key only your server knows
+  { expiresIn: "7d" }                  // token dies after 7 days
+);
+```
+
+**Your code — Verifying token (middleware):**
+```js
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
+req.user = decoded;  // { id: "123", role: "owner" }
+next();              // go to controller
+```
+
+**Two ways token stops working:**
+- Logout → frontend deletes token from localStorage
+- Expiry → after 7 days server rejects it automatically
+
+---
+
+### 2. bcrypt — Password Hashing
+
+**Simple idea — Meat grinder:**
+```
+Password → put in grinder → hash comes out
+Hash → cannot put back → get password   (ONE WAY)
+```
+
+**Without bcrypt (DANGEROUS):**
+```
+User sets password:  mypassword123
+Stored in DB:        mypassword123   ← anyone can read it
+```
+
+**With bcrypt (SAFE):**
+```
+User sets password:  mypassword123
+Stored in DB:        $2a$10$xK9sd2PlmNwbzHt...   ← unreadable
+```
+
+**What is Salt:**
+```
+Salt = random string added before hashing
+mypassword123 + $2a$10$N9qo8... → completely different hash every time
+Two users with same password → get DIFFERENT hashes
+```
+
+**Salt rounds = 10 → hashes 1024 times**
+
+**Your code:**
+```js
+// Register — hash the password
+const hashedPassword = await bcrypt.hash(password, 10);
+
+// Login — compare what user typed with hash in DB
+const isMatch = await bcrypt.compare(password, user.password);
+// isMatch = true → login allowed
+// isMatch = false → wrong password
+```
+
+**How compare works inside:**
+```
+Takes plain password  → mypassword123
+Takes hash from DB    → $2a$10$xK9sd2...
+Extracts salt from hash automatically
+Re-hashes with same salt → compares result
+Match? → true ✅    No match? → false ❌
+```
+
+---
+
+### 3. Middleware — protect
+
+**Simple idea:**
+```
+Request → protect() → check token → valid? → next() → controller
+                                  → invalid? → 401 stop here
+```
+
+**Your code:**
+```js
+const protect = async (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) return res.status(401).json({ message: "No token" });
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  req.user = decoded;   // controller now knows who is logged in
+  next();               // go to controller
+};
+```
+
+**Used on:**
+```
+POST /api/property/add    → protect → addProperty
+PUT  /api/property/:id    → protect → updateProperty
+DELETE /api/property/:id  → protect → deleteProperty
+```
+
+---
+
+### 4. Async / Await
+
+**Why we need it:**
+```
+DB calls take time (100-500ms)
+API calls take time
+Without async/await → code does not wait → gets undefined
+With async/await    → code waits → gets correct data
+```
+
+**Your code:**
+```js
+const registerUser = async (req, res) => {   // async = has await inside
   try {
-    const user = await User.findOne({ email }); // await = wait for DB to respond
-    // ... rest of code
+    const user = await User.findOne({ email }); // await = wait for DB
+    // runs only after DB responds
   } catch (error) {
-    res.status(500).json({ message: "Server Error" }); // if anything breaks, catch it
+    res.status(500).json({ message: "Server Error" }); // if anything fails
   }
 };
 ```
 
-### Environment Variables (.env)
-```
-MONGO_URI        → link to MongoDB Atlas database
-JWT_SECRET       → secret key to sign/verify tokens
-RESEND_API_KEY   → key to send emails via Resend
-GOOGLE_CLIENT_ID → Google OAuth app ID
-GOOGLE_CLIENT_SECRET → Google OAuth secret
-SESSION_SECRET   → secret for Express session
+---
 
-Used in code as: process.env.JWT_SECRET
-NEVER push .env to GitHub → it is in .gitignore
+### 5. REST API + HTTP Methods
+
+| Method | Used for | Your project |
+|---|---|---|
+| GET | Read data | Get all properties, get one property |
+| POST | Create data | Register, Login, Add property, Send OTP |
+| PUT | Update data | Edit property |
+| DELETE | Delete data | Delete property |
+
+**Status codes:**
+```
+200 → OK (success)
+201 → Created (register, add property)
+400 → Bad request (wrong password, user exists)
+401 → Unauthorized (no token or wrong token)
+404 → Not found (user not found, property not found)
+500 → Server error (unexpected crash)
 ```
 
 ---
 
-## PART 6 — INTERVIEW QUESTIONS TO PRACTICE
+### 6. MongoDB / Mongoose Operations
+
+```js
+User.findOne({ email })              // find one user by email
+User.create({ name, email, role })   // create new user in DB
+user.save()                          // save changes to existing user
+Property.find()                      // get ALL properties
+Property.findById(id)                // get ONE property by ID
+Property.findByIdAndUpdate(id, data) // find and update
+Property.findByIdAndDelete(id)       // find and delete
+.populate('owner', 'name email')     // also get owner name+email from User collection
+```
+
+---
+
+### 7. OTP Flow (Forgot Password)
+
+```
+Step 1 → User enters email
+Step 2 → Server: Math.floor(100000 + Math.random() * 900000) → 6-digit OTP
+Step 3 → Server: otpExpiry = Date.now() + 10 minutes
+Step 4 → Save OTP + expiry to user in MongoDB
+Step 5 → Resend API sends OTP to email
+Step 6 → User enters OTP
+Step 7 → Server: OTP match? + not expired? → both pass → clear OTP from DB
+Step 8 → User sets new password → bcrypt.hash → save to DB
+```
+
+---
+
+### 8. Environment Variables (.env)
+
+```
+MONGO_URI          → link to MongoDB Atlas database
+JWT_SECRET         → secret key to sign/verify tokens
+RESEND_API_KEY     → key to send emails
+GOOGLE_CLIENT_ID   → Google OAuth app ID
+GOOGLE_CLIENT_SECRET → Google OAuth secret
+SESSION_SECRET     → secret for Express session
+```
+
+```js
+// Used in code as:
+process.env.JWT_SECRET
+process.env.MONGO_URI
+```
+
+**NEVER push .env to GitHub → already in .gitignore**
+
+---
+
+### 9. Packages Used
+
+| Package | Why |
+|---|---|
+| express | Create server and routes |
+| mongoose | Connect to MongoDB, query DB |
+| bcryptjs | Hash passwords |
+| jsonwebtoken | JWT token system |
+| dotenv | Load .env file |
+| cors | Allow frontend to call backend |
+| multer | Handle image file uploads |
+| passport | Google OAuth |
+| passport-google-oauth20 | Google strategy for passport |
+| express-session | Session for Google OAuth |
+| resend | Send emails via HTTP API |
+| nodemon | Auto restart server while coding |
+
+---
+
+### 10. Nodemailer vs Resend
+
+```
+Nodemailer → sends email via SMTP (port 465/587)
+           → Render free plan BLOCKS these ports ❌
+           → OTP emails stopped working on Render
+
+Resend     → sends email via HTTP (port 443)
+           → Render allows port 443 ✅
+           → Switched to Resend → emails work again
+```
+
+---
+
+### 11. require() and module.exports
+
+```js
+// module.exports → share this file with others
+module.exports = { registerUser, loginUser };
+
+// require() → import another file or package
+const { registerUser } = require("../controllers/authController");
+const bcrypt = require("bcryptjs");  // from npm
+```
+
+**Path meaning:**
+```
+"../models/user"   → go one folder back, then into models folder, open user.js
+"./config/db"      → stay in same folder, go into config, open db.js
+"bcryptjs"         → from node_modules (installed package)
+```
+
+---
+
+## PART 6 — ALL TERMINAL COMMANDS USED
+
+| Command | Why |
+|---|---|
+| `npm init -y` | Create package.json — start project |
+| `npm install` | Install all packages from package.json |
+| `npm install express` | Install one package |
+| `npm start` | Start the server |
+| `node server.js` | Run server manually |
+| `git init` | Start git in project |
+| `git status` | See changed files |
+| `git add filename` | Stage specific file |
+| `git commit -m "msg"` | Save changes with message |
+| `git push` | Push code to GitHub |
+
+---
+
+## PART 7 — INTERVIEW QUESTIONS TO PRACTICE
 
 1. Explain your project SmartNest in 2 minutes
 2. What is JWT? How does authentication work in your project?
 3. Why do we hash passwords? What is salt? What is bcrypt?
-4. What is middleware? How does protect middleware work?
-5. What is the difference between SQL and NoSQL?
-6. What are HTTP methods? (GET POST PUT DELETE)
-7. What are status codes? (200 201 400 401 404 500)
-8. Explain your forgot password OTP flow step by step
-9. What is async/await? Why do we use it?
-10. What is MVC pattern? Explain with your project
-11. What is CORS? Why did you use it?
-12. Why did you switch from Nodemailer to Resend?
-13. What is Multer? How did you use it for image uploads?
-14. What is Passport.js? How does Google OAuth work?
+4. What is the difference between hashing and encryption?
+5. What is middleware? How does protect middleware work?
+6. What is the difference between SQL and NoSQL?
+7. What are HTTP methods? (GET POST PUT DELETE)
+8. What are status codes? (200 201 400 401 404 500)
+9. Explain your forgot password OTP flow step by step
+10. What is async/await? Why do we use it?
+11. What is MVC pattern? Explain with your project
+12. What is CORS? Why did you use it?
+13. Why did you switch from Nodemailer to Resend?
+14. What is Multer? How did you use it for image uploads?
 15. What is populate() in Mongoose?
