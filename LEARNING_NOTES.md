@@ -624,20 +624,4 @@ const bcrypt = require("bcryptjs");  // from npm
 
 ---
 
-## PART 7 — INTERVIEW QUESTIONS TO PRACTICE
 
-1. Explain your project SmartNest in 2 minutes
-2. What is JWT? How does authentication work in your project?
-3. Why do we hash passwords? What is salt? What is bcrypt?
-4. What is the difference between hashing and encryption?
-5. What is middleware? How does protect middleware work?
-6. What is the difference between SQL and NoSQL?
-7. What are HTTP methods? (GET POST PUT DELETE)
-8. What are status codes? (200 201 400 401 404 500)
-9. Explain your forgot password OTP flow step by step
-10. What is async/await? Why do we use it?
-11. What is MVC pattern? Explain with your project
-12. What is CORS? Why did you use it?
-13. Why did you switch from Nodemailer to Resend?
-14. What is Multer? How did you use it for image uploads?
-15. What is populate() in Mongoose?
