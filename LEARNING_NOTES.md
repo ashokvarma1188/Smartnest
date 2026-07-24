@@ -624,4 +624,4 @@ const bcrypt = require("bcryptjs");  // from npm
 
 ---
 
-
+"SmartNest is a full-stack real estate platform I built using Node.js, Express.js, and MongoDB. It has two roles — owners can list properties and buyers can browse them. I implemented JWT authentication, bcrypt password hashing, Google OAuth login, and a 3-step OTP-based password reset. For image uploads I used Multer. During deployment on Render, I faced an issue where Nodemailer stopped working because Render blocks SMTP ports. I debugged it and switched to Resend API which uses HTTP — this fixed the issue completely."
