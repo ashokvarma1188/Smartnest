@@ -34,6 +34,7 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitLabel.textContent = "Checking…";
 
+// this token ni verify chesinappudu ekkada verify chesav anthe ekkada store chesav anthe frontend loke store chesav anthe token valid ga undhaledho chusudhe
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
@@ -47,6 +48,7 @@ form.addEventListener('submit', async (e) => {
       throw new Error(data.message || "Couldn't log you in. Check your details and try again.");
     }
 
+  //token is stored here
     const storage = document.getElementById('remember').checked ? localStorage : sessionStorage;
     storage.setItem('smartnest_token', data.token);
     storage.setItem('smartnest_user', JSON.stringify(data.user));

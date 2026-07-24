@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
+
 // Register User
 const registerUser = async (req, res) => {
   try {
@@ -18,7 +19,7 @@ const registerUser = async (req, res) => {
         message: "User already exists",
       });
     }
-
+//hashpassword ante password ni encrypt chesi store cheyadam. so that if hacker database ni hack chesina kuda password ni read cheyaledhu.
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -56,7 +57,7 @@ const loginUser = async (req, res) => {
         message: "User not found",
       });
     }
-
+ //password ni compare chesi match ayithe matrame login avuthadu. so that if hacker database ni hack chesina kuda password ni read cheyaledhu.
     const isMatch = await bcrypt.compare(
       password,
       user.password
@@ -68,6 +69,7 @@ const loginUser = async (req, res) => {
         message: "Invalid password",
       });
     }
+
 
     const token = jwt.sign(
       {

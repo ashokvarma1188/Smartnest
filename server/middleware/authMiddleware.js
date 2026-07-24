@@ -15,9 +15,10 @@ const protect = async (req, res, next) => {
       });
     }
 
+    // Verify the token anthe ekkada verify ayena token frontend loke store avudhe
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET // ekkada same screat key use chesav token create chesinappudu anhte token valid ga undhaledho chusudhe
     );
 
     req.user = decoded;
