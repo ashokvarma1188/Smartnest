@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const googleAuthRoutes = require("./routes/googleAuthRoutes");
 const testRoutes = require("./routes/testRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 const cors = require("cors");
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/property", propertyRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("SmartNest Backend Running");

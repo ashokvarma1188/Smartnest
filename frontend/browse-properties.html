@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/browse-properties.css">
+<link rel="stylesheet" href="css/chatbot.css">
 </head>
 <body>
 
@@ -102,8 +103,44 @@
   </div>
 </div>
 
+<!-- CHATBOT -->
+<button id="chatbot-btn" title="Ask SmartNest AI">
+  <div id="chatbot-dot"></div>
+  <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-2 10H6V10h12v2zm0-3H6V7h12v2z"/></svg>
+</button>
+
+<div id="chatbot-window">
+  <div class="cb-header">
+    <div class="cb-avatar">🏠</div>
+    <div class="cb-title">
+      <h4>SmartNest AI</h4>
+      <span>● Online</span>
+    </div>
+    <button class="cb-close" id="cb-close">✕</button>
+  </div>
+
+  <div class="cb-messages" id="cb-messages">
+    <div class="cb-msg bot">Hi! I am SmartNest AI. I can help you find properties, answer questions about the platform, or guide you through buying or listing a home. How can I help you today?</div>
+  </div>
+
+  <div class="cb-suggestions">
+    <button class="cb-chip">2BHK under 30 lakhs</button>
+    <button class="cb-chip">How to contact owner?</button>
+    <button class="cb-chip">How to list a property?</button>
+    <button class="cb-chip">What is SmartNest?</button>
+  </div>
+
+  <div class="cb-input-row">
+    <input type="text" id="cb-input" placeholder="Ask anything about properties…" />
+    <button class="cb-send" id="cb-send">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+    </button>
+  </div>
+</div>
+
 <script src="./js/toast.js"></script>
 <script src="js/browse-properties.js"></script>
+<script src="js/chatbot.js"></script>
 
 </body>
 </html>
