@@ -1,4 +1,4 @@
-const API_BASE = "https://smartnest-2zw0.onrender.com/api";
+const CHAT_API = "https://smartnest-2zw0.onrender.com/api";
 
 const btn       = document.getElementById("chatbot-btn");
 const window_   = document.getElementById("chatbot-window");
@@ -63,7 +63,7 @@ async function sendMessage() {
   sendBtn.disabled = true;
 
   try {
-    const res = await fetch(`${API_BASE}/chat`, {
+    const res = await fetch(`${CHAT_API}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: text })
