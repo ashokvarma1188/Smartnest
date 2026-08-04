@@ -21,8 +21,8 @@ jobs:
 
       - name: Commit and push
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "ashokvarma1188"
+          git config user.email "193208750+ashokvarma1188@users.noreply.github.com"
           git add .towline/activity-log.md
           git diff --staged --quiet || git commit -m "Automated daily commit"
           git push
