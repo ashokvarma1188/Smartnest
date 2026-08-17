@@ -4,16 +4,21 @@ const token   = localStorage.getItem('smartnest_token')  || sessionStorage.getIt
 const userRaw = localStorage.getItem('smartnest_user')   || sessionStorage.getItem('smartnest_user');
 const user    = userRaw ? JSON.parse(userRaw) : null;
 
-if (!token || !user) { window.location.href = "login.html"; }
-
-document.getElementById('userName').textContent      = user.name || "User";
-document.getElementById('avatarInitial').textContent = (user.name || "U").charAt(0).toUpperCase();
-if (user.role === 'owner') document.getElementById('roleBadge').textContent = 'Owner';
-
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  localStorage.clear(); sessionStorage.clear();
-  window.location.href = "login.html";
-});
+if (token && user) {
+  document.getElementById('userName').textContent      = user.name || "User";
+  document.getElementById('avatarInitial').textContent = (user.name || "U").charAt(0).toUpperCase();
+  if (user.role === 'owner') document.getElementById('roleBadge').textContent = 'Owner';
+  document.getElementById('roleBadge').style.display  = '';
+  document.getElementById('userChip').style.display   = '';
+  document.getElementById('profileBtn').style.display = '';
+  document.getElementById('logoutBtn').style.display  = '';
+  document.getElementById('guestLogin').style.display    = 'none';
+  document.getElementById('guestRegister').style.display = 'none';
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.clear(); sessionStorage.clear();
+    window.location.href = "login.html";
+  });
+}
 
 // Favorites
 const FAV_KEY = 'smartnest_favorites';
@@ -124,6 +129,7 @@ function renderCards(list) {
 
     card.querySelector('.heart-btn').addEventListener('click', (e) => {
       e.stopPropagation();
+      if (!token) { showToast('Login to save properties', 'info'); return; }
       const btn   = e.currentTarget;
       const added = toggleFav(pid);
       btn.textContent = added ? '♥' : '♡';
@@ -132,7 +138,10 @@ function renderCards(list) {
       if (showFavsOnly) applyAll();
     });
 
-    card.querySelector('.contact-btn').addEventListener('click', () => openContact(p));
+    card.querySelector('.contact-btn').addEventListener('click', () => {
+      if (!token) { showToast('Login to contact owner', 'info'); return; }
+      openContact(p);
+    });
     grid.appendChild(card);
   });
 }
@@ -195,6 +204,7 @@ document.getElementById('clearFilters').addEventListener('click', () => {
 
 const favToggleBtn = document.getElementById('favToggle');
 favToggleBtn.addEventListener('click', () => {
+  if (!token) { showToast('Login to save properties', 'info'); return; }
   showFavsOnly = !showFavsOnly;
   updateFavBtn();
   applyAll();

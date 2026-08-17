@@ -1,0 +1,62 @@
+/* ── Theme Toggle Button ── */
+.theme-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text-muted);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s, color .15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.theme-btn:hover { border-color: var(--brass); color: var(--brass); }
+
+/* ── Guest Sign-Up Button (used in topbar) ── */
+.btn-solid-sm {
+  background: var(--brass);
+  border: none;
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.btn-solid-sm:hover { background: var(--brass-dark); }
+
+/* ── Dark Mode: override CSS variables ── */
+html[data-theme="dark"] {
+  --paper: #0A1928;
+  --paper-card: #0F2236;
+  --paper-dim: #1A3550;
+  --text-dark: #E8EEF3;
+  --text-dim: #8FAEC8;
+}
+
+/* Dark mode: skeleton shimmer uses dark colors */
+html[data-theme="dark"] .sk {
+  background: linear-gradient(90deg, #1A2D3F 25%, #1E3347 50%, #1A2D3F 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+
+/* Dark mode: filter select dropdown arrow (make it light) */
+html[data-theme="dark"] .filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239FB6C9' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+/* Dark mode: native input/select color-scheme so browser chrome matches */
+html[data-theme="dark"] input,
+html[data-theme="dark"] select {
+  color-scheme: dark;
+}
