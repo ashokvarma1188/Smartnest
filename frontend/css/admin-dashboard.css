@@ -60,8 +60,21 @@ main{max-width:1100px;margin:0 auto;padding:0 32px 60px;}
 .section-head h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:3px;}
 .section-head p{font-size:13px;color:var(--text-dim);}
 .filter-row{display:flex;gap:8px;}
-.role-select{background:var(--paper-card);border:1.5px solid var(--paper-dim);color:var(--text-dark);font:inherit;font-size:13.5px;padding:8px 12px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .15s;}
-.role-select:focus{border-color:var(--brass);}
+
+/* ── User Controls (search + role pills) ── */
+.user-controls{display:flex;flex-direction:column;gap:14px;margin-bottom:18px;}
+.search-wrap{position:relative;max-width:520px;}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--text-dim);pointer-events:none;}
+.search-input{width:100%;background:var(--paper-card);border:1.5px solid var(--paper-dim);border-radius:10px;padding:11px 14px 11px 42px;font:inherit;font-size:14px;color:var(--text-dark);outline:none;transition:border-color .15s,box-shadow .15s;}
+.search-input::placeholder{color:var(--text-dim);}
+.search-input:focus{border-color:var(--brass);box-shadow:0 0 0 3px rgba(201,138,53,0.12);}
+.role-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.role-pill-btn{background:var(--paper-card);border:1.5px solid var(--paper-dim);color:var(--text-dim);font:inherit;font-size:13px;font-weight:600;padding:7px 18px;border-radius:22px;cursor:pointer;transition:all .15s;}
+.role-pill-btn:hover{border-color:var(--text-dim);color:var(--text-dark);}
+.role-pill-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+.role-pill-btn.active.buyer{background:var(--ok);border-color:var(--ok);}
+.role-pill-btn.active.owner{background:var(--brass-dark);border-color:var(--brass-dark);}
+.role-pill-btn.active.admin{background:#7850C8;border-color:#7850C8;}
 
 /* ── Table ── */
 .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--paper-dim);background:var(--paper-card);}

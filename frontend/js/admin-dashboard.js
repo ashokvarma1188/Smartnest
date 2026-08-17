@@ -75,9 +75,29 @@ function renderUsers(list) {
   });
 }
 
-document.getElementById('roleFilter').addEventListener('change', function () {
-  const val = this.value;
-  renderUsers(val ? allUsers.filter(u => u.role === val) : allUsers);
+// ── Search + role filter ──
+let activeRole = '';
+
+function applyFilters() {
+  const query = document.getElementById('userSearch').value.trim().toLowerCase();
+  let filtered = allUsers;
+  if (activeRole) filtered = filtered.filter(u => u.role === activeRole);
+  if (query)      filtered = filtered.filter(u =>
+    (u.name  || '').toLowerCase().includes(query) ||
+    (u.email || '').toLowerCase().includes(query)
+  );
+  renderUsers(filtered);
+}
+
+document.getElementById('userSearch').addEventListener('input', applyFilters);
+
+document.querySelectorAll('.role-pill-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.role-pill-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeRole = btn.dataset.role;
+    applyFilters();
+  });
 });
 
 // ── Delete confirm ──

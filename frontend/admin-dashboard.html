@@ -56,13 +56,19 @@
         <h2>All Users</h2>
         <p id="userCountLabel">Loading…</p>
       </div>
-      <div class="filter-row">
-        <select id="roleFilter" class="role-select">
-          <option value="">All roles</option>
-          <option value="buyer">Buyers</option>
-          <option value="owner">Owners</option>
-          <option value="admin">Admins</option>
-        </select>
+    </div>
+
+    <!-- Search + role filter -->
+    <div class="user-controls">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="userSearch" class="search-input" placeholder="Search by name or email…" autocomplete="off"/>
+      </div>
+      <div class="role-pills">
+        <button class="role-pill-btn active" data-role="">All</button>
+        <button class="role-pill-btn buyer" data-role="buyer">Buyers</button>
+        <button class="role-pill-btn owner" data-role="owner">Owners</button>
+        <button class="role-pill-btn admin" data-role="admin">Admins</button>
       </div>
     </div>
 
