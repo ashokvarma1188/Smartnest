@@ -14,6 +14,7 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 const {
   addProperty,
   getAllProperties,
+  getMyProperties,
   getPropertyById,
   updateProperty,
   deleteProperty,
@@ -21,6 +22,7 @@ const {
 
 router.post("/add",    protect, upload.array("images", 8), addProperty);  // ✦ multiple images
 router.get("/all",     getAllProperties);
+router.get("/my",      protect, getMyProperties);   // owner's own properties only — must be before /:id
 router.get("/:id",     getPropertyById);
 router.put("/:id",     protect, upload.array("images", 8), updateProperty); // ✦ multiple images
 router.delete("/:id",  protect, deleteProperty);

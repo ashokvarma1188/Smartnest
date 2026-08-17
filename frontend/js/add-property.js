@@ -113,12 +113,12 @@ function renderProperties(list) {
 
 async function loadProperties() {
   try {
-    const res  = await fetch(`${API_BASE}/property/all`, {
+    const res  = await fetch(`${API_BASE}/property/my`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Couldn't load your properties.");
-    renderProperties(data.properties || data || []);
+    renderProperties(data.properties || []);
   } catch (err) {
     skeletonGrid.style.display = 'none';
     renderProperties([]);

@@ -45,6 +45,22 @@ const addProperty = async (req, res) => {
   }
 };
 
+// GET ONLY THIS OWNER'S PROPERTIES
+const getMyProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ owner: req.user.id }).populate('owner', 'name email');
+
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      properties,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
 // GET ALL PROPERTIES
 const getAllProperties = async (req, res) => {
   try {
@@ -170,6 +186,7 @@ const deleteProperty = async (req, res) => {
 module.exports = {
   addProperty,
   getAllProperties,
+  getMyProperties,
   getPropertyById,
   updateProperty,
   deleteProperty,
