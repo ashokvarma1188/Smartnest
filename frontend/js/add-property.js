@@ -128,6 +128,126 @@ async function loadProperties() {
 
 loadProperties();
 
+// ── Tab switching ──
+let othersLoaded = false;
+let chatsLoaded  = false;
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('tab-' + tab).style.display = 'block';
+
+    if (tab === 'others' && !othersLoaded) { othersLoaded = true; loadOthersProperties(); }
+    if (tab === 'chats'  && !chatsLoaded)  { chatsLoaded  = true; loadOwnerChats(); }
+  });
+});
+
+// ── Others' Properties ──
+const PLACEHOLDER_IMAGES = [
+  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=600&h=400&fit=crop&q=80',
+];
+function getPlaceholder(id) {
+  const seed = String(id).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  return PLACEHOLDER_IMAGES[seed % PLACEHOLDER_IMAGES.length];
+}
+
+async function loadOthersProperties() {
+  const sk = document.getElementById('othersSkeletonGrid');
+  const gr = document.getElementById('othersGrid');
+  const em = document.getElementById('othersEmpty');
+  sk.style.display = 'grid'; gr.style.display = 'none'; em.style.display = 'none';
+
+  try {
+    const res  = await fetch(`${API_BASE}/property/others`, { headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    const list = data.properties || [];
+    sk.style.display = 'none';
+
+    if (!list.length) { em.style.display = 'block'; return; }
+
+    gr.style.display = 'grid';
+    gr.innerHTML = list.map((p, i) => {
+      const imgSrc = (p.images && p.images.length) ? p.images[0] : p.image;
+      const imgUrl = imgSrc ? `https://smartnest-2zw0.onrender.com${imgSrc}` : null;
+      const img    = imgUrl
+        ? `<img src="${imgUrl}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src='${getPlaceholder(p._id)}'"/>`
+        : `<img src="${getPlaceholder(p._id)}" alt="${p.title}"/>`;
+      return `<div class="prop-card" style="animation-delay:${i*0.05}s">
+        <div class="prop-media">${img}
+          <div class="prop-price-overlay">₹${Number(p.price||0).toLocaleString('en-IN')}</div>
+        </div>
+        <div class="prop-body">
+          <div class="prop-title">${p.title || 'Untitled'}</div>
+          <div class="prop-loc">${pinIconSVG()} ${p.location || 'Location not set'}</div>
+          <div class="prop-meta" style="margin-top:10px;">
+            <span style="font-size:12px;color:var(--text-muted-dark);">by ${(p.owner && p.owner.name) ? p.owner.name : 'Owner'}</span>
+            <a href="property-detail.html?id=${p._id}" style="font-size:12px;font-weight:600;color:var(--brass-dark);text-decoration:none;" target="_blank">View →</a>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch {
+    document.getElementById('othersSkeletonGrid').style.display = 'none';
+    document.getElementById('othersEmpty').style.display = 'block';
+  }
+}
+
+// ── Owner Chats ──
+async function loadOwnerChats() {
+  const list  = document.getElementById('chatsList');
+  const empty = document.getElementById('chatsLoading');
+  list.innerHTML = '<div class="chats-loading">Loading chats…</div>';
+
+  try {
+    const res   = await fetch(`${API_BASE}/conversations/owner`, { headers: { Authorization: `Bearer ${token}` } });
+    const data  = await res.json();
+    const convs = data.conversations || [];
+
+    if (!convs.length) {
+      list.innerHTML = '';
+      empty.style.display = 'flex';
+      return;
+    }
+
+    const badge = document.getElementById('chatBadge');
+    badge.textContent = convs.length;
+    badge.style.display = 'inline-flex';
+
+    list.innerHTML = convs.map(c => {
+      const buyer    = c.buyer    || {};
+      const prop     = c.property || {};
+      const msgs     = c.messages || [];
+      const last     = msgs[msgs.length - 1];
+      const lastText = last ? last.text : 'No messages yet';
+      const lastTime = last ? new Date(last.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : '';
+      return `<div class="chat-conv-card">
+        <div class="conv-avatar">${(buyer.name || 'B')[0].toUpperCase()}</div>
+        <div class="conv-info">
+          <div class="conv-buyer">${buyer.name || 'Buyer'}</div>
+          <div class="conv-prop">${prop.title || 'Property'}</div>
+          <div class="conv-last">${lastText}</div>
+        </div>
+        <div class="conv-meta">
+          <div class="conv-time">${lastTime}</div>
+          <div class="conv-count">${msgs.length} msg${msgs.length !== 1 ? 's' : ''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch {
+    list.innerHTML = '<div class="chats-loading">Could not load chats.</div>';
+  }
+}
+
 // Modal open/close
 const overlay = document.getElementById('overlay');
 function openModal() {

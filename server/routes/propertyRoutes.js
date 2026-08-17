@@ -15,15 +15,17 @@ const {
   addProperty,
   getAllProperties,
   getMyProperties,
+  getOthersProperties,
   getPropertyById,
   updateProperty,
   deleteProperty,
 } = require("../controllers/propertyController");
 
-router.post("/add",    protect, upload.array("images", 8), addProperty);  // ✦ multiple images
-router.get("/all",     getAllProperties);
-router.get("/my",      protect, getMyProperties);   // owner's own properties only — must be before /:id
-router.get("/:id",     getPropertyById);
+router.post("/add",      protect, upload.array("images", 8), addProperty);
+router.get("/all",       getAllProperties);
+router.get("/my",        protect, getMyProperties);      // only this owner's properties
+router.get("/others",    protect, getOthersProperties);  // all other owners' properties
+router.get("/:id",       getPropertyById);
 router.put("/:id",     protect, upload.array("images", 8), updateProperty); // ✦ multiple images
 router.delete("/:id",  protect, deleteProperty);
 

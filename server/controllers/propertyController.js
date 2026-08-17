@@ -61,6 +61,17 @@ const getMyProperties = async (req, res) => {
   }
 };
 
+// GET PROPERTIES LISTED BY OTHER OWNERS (not the logged-in user)
+const getOthersProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ owner: { $ne: req.user.id } }).populate('owner', 'name email');
+    res.status(200).json({ success: true, count: properties.length, properties });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
 // GET ALL PROPERTIES
 const getAllProperties = async (req, res) => {
   try {
@@ -110,6 +121,17 @@ const getPropertyById = async (req, res) => {
 // UPDATE PROPERTY
 const updateProperty = async (req, res) => {
   try {
+    const property = await Property.findById(req.params.id);
+
+    if (!property) {
+      return res.status(404).json({ success: false, message: "Property not found" });
+    }
+
+    // Ownership check — only the owner who created it can edit
+    if (property.owner.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Not authorized to edit this property" });
+    }
+
     const updateData = {
       title:       req.body.title,
       description: req.body.description,
@@ -118,67 +140,42 @@ const updateProperty = async (req, res) => {
       bedrooms:    Number(req.body.bedrooms) || 0,
       area:        Number(req.body.area) || 0,
     };
-    // ✦ NEW — handle multiple images on update
+
     if (req.files && req.files.length > 0) {
       const imagePaths = req.files.map(f => `/uploads/${f.filename}`);
       updateData.image  = imagePaths[0];
       updateData.images = imagePaths;
     }
 
-    const property = await Property.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-      }
-    );
+    const updated = await Property.findByIdAndUpdate(req.params.id, updateData, { new: true });
 
-    if (!property) {
-      return res.status(404).json({
-        success: false,
-        message: "Property not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      property,
-    });
+    res.status(200).json({ success: true, property: updated });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
 // DELETE PROPERTY
 const deleteProperty = async (req, res) => {
   try {
-    const property = await Property.findByIdAndDelete(
-      req.params.id
-    );
+    const property = await Property.findById(req.params.id);
 
     if (!property) {
-      return res.status(404).json({
-        success: false,
-        message: "Property not found",
-      });
+      return res.status(404).json({ success: false, message: "Property not found" });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Property deleted successfully",
-    });
+    // Ownership check — only the owner who created it can delete
+    if (property.owner.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this property" });
+    }
+
+    await Property.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ success: true, message: "Property deleted successfully" });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -187,6 +184,7 @@ module.exports = {
   addProperty,
   getAllProperties,
   getMyProperties,
+  getOthersProperties,
   getPropertyById,
   updateProperty,
   deleteProperty,

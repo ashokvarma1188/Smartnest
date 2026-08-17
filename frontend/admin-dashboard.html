@@ -1,0 +1,130 @@
+<!-- Admin Dashboard — platform stats + user management -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartNest — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin-dashboard.css">
+<link rel="stylesheet" href="css/theme.css">
+<script src="js/theme.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>SmartNest <span class="admin-tag">Admin</span></div>
+  <div class="topbar-right">
+    <button class="theme-btn" id="themeToggle" title="Toggle theme">🌙</button>
+    <div class="user-chip">
+      <div class="avatar" id="avatarInitial">A</div>
+      <span id="userName">Admin</span>
+    </div>
+    <a href="browse-properties.html" class="nav-link">Browse</a>
+    <button class="logout-btn" id="logoutBtn">Log out</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Admin Dashboard</h1>
+    <p>Platform overview — users, properties, and enquiries across SmartNest.</p>
+  </div>
+</div>
+
+<main>
+  <!-- Stats row -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card sk-card"><div class="sk sk-num"></div><div class="sk sk-lbl"></div></div>
+    <div class="stat-card sk-card"><div class="sk sk-num"></div><div class="sk sk-lbl"></div></div>
+    <div class="stat-card sk-card"><div class="sk sk-num"></div><div class="sk sk-lbl"></div></div>
+    <div class="stat-card sk-card"><div class="sk sk-num"></div><div class="sk sk-lbl"></div></div>
+    <div class="stat-card sk-card"><div class="sk sk-num"></div><div class="sk sk-lbl"></div></div>
+    <div class="stat-card sk-card"><div class="sk sk-num"></div><div class="sk sk-lbl"></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" data-tab="users">Users</button>
+    <button class="tab-btn" data-tab="properties">Properties</button>
+  </div>
+
+  <!-- Users tab -->
+  <div class="tab-content" id="tab-users">
+    <div class="section-head">
+      <div>
+        <h2>All Users</h2>
+        <p id="userCountLabel">Loading…</p>
+      </div>
+      <div class="filter-row">
+        <select id="roleFilter" class="role-select">
+          <option value="">All roles</option>
+          <option value="buyer">Buyers</option>
+          <option value="owner">Owners</option>
+          <option value="admin">Admins</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Joined</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr><td colspan="5" class="loading-cell">Loading users…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Properties tab -->
+  <div class="tab-content" id="tab-properties" style="display:none;">
+    <div class="section-head">
+      <div>
+        <h2>All Properties</h2>
+        <p id="propCountLabel">Loading…</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="propsTable">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Owner</th>
+            <th>Location</th>
+            <th>Price</th>
+            <th>Listed</th>
+          </tr>
+        </thead>
+        <tbody id="propsBody">
+          <tr><td colspan="5" class="loading-cell">Loading properties…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Confirm delete modal -->
+<div class="overlay" id="deleteOverlay">
+  <div class="confirm-modal">
+    <h3>Delete user?</h3>
+    <p id="deleteMsg">This will permanently remove the user from SmartNest.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" id="cancelDelete">Cancel</button>
+      <button class="btn-danger" id="confirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="./js/toast.js"></script>
+<script src="js/admin-dashboard.js"></script>
+</body>
+</html>

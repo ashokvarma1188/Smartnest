@@ -119,7 +119,31 @@ main{max-width:1180px;margin:0 auto;padding:36px 32px 80px;}
 .modal-status.show{display:block;}
 .modal-status.error{background:rgba(182,73,58,0.1);color:var(--err);border:1px solid rgba(182,73,58,0.25);}
 
+/* ── Tabs ── */
+.tabs-bar{display:flex;gap:4px;padding:0 32px;border-bottom:1px solid var(--paper-dim);background:var(--paper);position:sticky;top:56px;z-index:20;}
+.tab-btn{background:none;border:none;border-bottom:2.5px solid transparent;color:var(--text-muted-dark);font:inherit;font-size:13.5px;font-weight:600;padding:14px 18px;cursor:pointer;transition:color .15s,border-color .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tab-btn:hover{color:var(--text-dark);}
+.tab-btn.active{color:var(--brass-dark);border-bottom-color:var(--brass);}
+.chat-badge{background:var(--brass);color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:1px 6px;min-width:18px;justify-content:center;}
+
+/* ── Chat conversation list ── */
+.chats-list{display:flex;flex-direction:column;gap:10px;padding:4px 0 40px;}
+.chats-loading{font-size:13px;color:var(--text-muted-dark);padding:30px 0;text-align:center;}
+.chat-conv-card{display:flex;align-items:center;gap:14px;background:var(--paper-card);border:1px solid var(--paper-dim);border-radius:12px;padding:16px 18px;cursor:default;transition:box-shadow .15s,border-color .15s;}
+.chat-conv-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.07);border-color:rgba(201,138,53,0.3);}
+.conv-avatar{width:42px;height:42px;border-radius:50%;background:var(--ink);color:var(--text-on-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;}
+.conv-info{flex:1;min-width:0;}
+.conv-buyer{font-size:14.5px;font-weight:700;color:var(--text-dark);margin-bottom:2px;}
+.conv-prop{font-size:12px;color:var(--text-muted-dark);margin-bottom:4px;}
+.conv-last{font-size:13px;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px;}
+.conv-meta{flex-shrink:0;text-align:right;}
+.conv-time{font-size:11.5px;color:var(--text-muted-dark);margin-bottom:4px;}
+.conv-count{font-size:11.5px;background:var(--brass-soft);color:var(--brass-dark);border-radius:20px;padding:2px 8px;font-weight:600;}
+
 @media(max-width:560px){
   .form-row{grid-template-columns:1fr;}
   .stat-row{grid-template-columns:1fr;}
+  .tabs-bar{padding:0 16px;}
+  .tab-btn{padding:12px 10px;font-size:13px;}
+  .conv-last{max-width:160px;}
 }

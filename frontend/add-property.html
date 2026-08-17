@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/add-property.css">
+<link rel="stylesheet" href="css/theme.css">
+<script src="js/theme.js"></script>
 </head>
 <body>
 
@@ -16,6 +18,7 @@
     <div class="wordmark"><span class="dot"></span> SmartNest</div>
     <div class="topbar-right">
       <span class="role-badge">Owner</span>
+      <button class="theme-btn" id="themeToggle" title="Toggle theme">🌙</button>
       <div class="user-chip">
         <div class="avatar" id="avatarInitial">A</div>
         <span id="userName">Owner</span>
@@ -53,36 +56,85 @@
 
   <!-- MAIN -->
   <main>
-    <div class="section-head">
-      <div>
-        <h2>My Properties</h2>
-        <p>Every listing you own, in one place.</p>
+    <!-- Tab navigation -->
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="my">My Properties</button>
+      <button class="tab-btn" data-tab="others">Others Listed</button>
+      <button class="tab-btn" data-tab="chats">My Chats <span class="chat-badge" id="chatBadge" style="display:none;"></span></button>
+    </div>
+
+    <!-- ── TAB: My Properties ── -->
+    <div class="tab-content" id="tab-my">
+      <div class="section-head">
+        <div>
+          <h2>My Properties</h2>
+          <p>Every listing you own, in one place.</p>
+        </div>
+        <button class="add-btn" id="openModalBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Property
+        </button>
       </div>
-      <button class="add-btn" id="openModalBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Property
-      </button>
+
+      <div class="grid" id="skeletonGrid">
+        <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+        <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+        <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+      </div>
+
+      <div class="grid" id="propGrid" style="display:none;"></div>
+
+      <div class="empty" id="emptyState">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>
+        <h3>No properties yet</h3>
+        <p>List your first property and buyers can find it directly — no broker in between.</p>
+        <button class="add-btn" id="emptyAddBtn" style="margin:0 auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add your first property
+        </button>
+      </div>
     </div>
 
-    <!-- loading skeletons -->
-    <div class="grid" id="skeletonGrid">
-      <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
-      <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
-      <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+    <!-- ── TAB: Others' Properties ── -->
+    <div class="tab-content" id="tab-others" style="display:none;">
+      <div class="section-head">
+        <div>
+          <h2>Properties by Other Owners</h2>
+          <p>See what competitors are listing on SmartNest.</p>
+        </div>
+      </div>
+
+      <div class="grid" id="othersSkeletonGrid">
+        <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+        <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+        <div class="skeleton-card"><div class="sk sk-media"></div><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div></div>
+      </div>
+
+      <div class="grid" id="othersGrid" style="display:none;"></div>
+
+      <div class="empty" id="othersEmpty" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>
+        <h3>No other listings</h3>
+        <p>You're the only owner on SmartNest right now.</p>
+      </div>
     </div>
 
-    <!-- property cards render here -->
-    <div class="grid" id="propGrid" style="display:none;"></div>
+    <!-- ── TAB: My Chats ── -->
+    <div class="tab-content" id="tab-chats" style="display:none;">
+      <div class="section-head">
+        <div>
+          <h2>Buyer Enquiries</h2>
+          <p>Conversations from buyers interested in your properties.</p>
+        </div>
+      </div>
 
-    <!-- empty state -->
-    <div class="empty" id="emptyState">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>
-      <h3>No properties yet</h3>
-      <p>List your first property and buyers can find it directly — no broker in between.</p>
-      <button class="add-btn" id="emptyAddBtn" style="margin:0 auto;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add your first property
-      </button>
+      <div id="chatsLoading" class="empty" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>
+        <h3>No chats yet</h3>
+        <p>Buyers will appear here when they message about your properties.</p>
+      </div>
+
+      <div id="chatsList" class="chats-list"></div>
     </div>
   </main>
 

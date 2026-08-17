@@ -30,6 +30,31 @@
   </div>
 </div>
 
+<!-- CHAT PANEL -->
+<div class="chat-overlay" id="chatOverlay">
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar" id="chatAvatar">O</div>
+        <div>
+          <div class="chat-owner-name" id="chatOwnerName">Owner</div>
+          <div class="chat-prop-name" id="chatPropName">Property</div>
+        </div>
+      </div>
+      <button class="chat-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-loading" id="chatLoading">Loading messages…</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Type a message…" autocomplete="off"/>
+      <button class="chat-send-btn" id="chatSend">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- CONTACT MODAL -->
 <div class="overlay" id="overlay">
   <div class="modal">
@@ -44,6 +69,7 @@
   </div>
 </div>
 
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="./js/toast.js"></script>
 <script src="js/property-detail.js"></script>
 </body>
