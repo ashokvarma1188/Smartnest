@@ -1,5 +1,21 @@
 const API = "https://smartnest-2zw0.onrender.com/api";
 const API_ROOT = "https://smartnest-2zw0.onrender.com";
+
+const PLACEHOLDER_IMAGES = [
+  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=900&h=600&fit=crop&q=80',
+];
+
+function getPlaceholder(id) {
+  const seed = String(id).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  return PLACEHOLDER_IMAGES[seed % PLACEHOLDER_IMAGES.length];
+}
 const token   = localStorage.getItem('smartnest_token')  || sessionStorage.getItem('smartnest_token');
 const userRaw = localStorage.getItem('smartnest_user')   || sessionStorage.getItem('smartnest_user');
 const me      = userRaw ? JSON.parse(userRaw) : null;
@@ -24,7 +40,9 @@ function renderPage(p) {
     ${images.length > 1 ? `<div class="gal-thumbs">${images.map((img,i) => `<img class="gal-thumb ${i===0?'active':''}" src="${API_ROOT}${img}" data-idx="${i}" alt=""/>`).join('')}</div>` : ''}
   ` : `
     <div class="gal-main">
-      <div class="no-img"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M3 11L12 4l9 7M5 10v10h14V10"/></svg></div>
+      <img src="${getPlaceholder(p._id)}" alt="${p.title}" class="active"
+        style="width:100%;height:100%;object-fit:cover;"
+        onerror="this.onerror=null;this.src='${getPlaceholder(p._id)}'"/>
     </div>
   `;
 

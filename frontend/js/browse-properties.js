@@ -56,8 +56,25 @@ function toggleFav(id) {
 let allProperties = [];
 let showFavsOnly  = false;
 
-const houseIcon = () => `<svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="#9FB6C9" stroke-width="1.4"><path d="M3 11 L12 4 L21 11 M5 10 V20 H19 V10"/></svg>`;
-const pinSvg    = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+// Curated high-quality property photos used as placeholders when no image uploaded
+const PLACEHOLDER_IMAGES = [
+  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=600&h=400&fit=crop&q=80',
+];
+
+// Pick a consistent placeholder for a given property ID (same property → same photo)
+function getPlaceholder(id) {
+  const seed = String(id).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  return PLACEHOLDER_IMAGES[seed % PLACEHOLDER_IMAGES.length];
+}
+
+const pinSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -107,7 +124,8 @@ function renderCards(list) {
 
     card.innerHTML = `
       <div class="prop-media">
-        ${imgUrl ? `<img src="${imgUrl}" alt="${escHtml(p.title)}" loading="lazy"/>` : houseIcon()}
+        <img src="${imgUrl || getPlaceholder(pid)}" alt="${escHtml(p.title)}" loading="lazy"
+          onerror="this.onerror=null;this.src='${getPlaceholder(pid)}'"/>
         <div class="prop-badges">
           <span class="prop-type">Active</span>
           <button class="heart-btn ${saved ? 'saved' : ''}" data-id="${pid}" title="${saved ? 'Remove from saved' : 'Save property'}">
