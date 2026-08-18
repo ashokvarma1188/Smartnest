@@ -1,5 +1,29 @@
 const API = "https://smartnest-2zw0.onrender.com/api";
 
+// ── Hero background slideshow ──
+const REEL_IMGS = [
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&h=900&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1600&h=900&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1600&h=900&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&h=900&fit=crop&q=85',
+  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&h=900&fit=crop&q=85',
+];
+(function initReel() {
+  const slides = document.querySelectorAll('.reel-slide');
+  slides.forEach((s, i) => { s.style.backgroundImage = `url('${REEL_IMGS[i]}')`; });
+  slides[0].classList.add('active');
+  let cur = 0;
+  setInterval(() => {
+    slides[cur].classList.remove('active');
+    cur = (cur + 1) % slides.length;
+    // Force animation restart on the incoming slide
+    slides[cur].style.animation = 'none';
+    slides[cur].offsetHeight; // reflow
+    slides[cur].style.animation = '';
+    slides[cur].classList.add('active');
+  }, 5500);
+})();
+
 // If already logged in, redirect to dashboard
 const token = localStorage.getItem('smartnest_token') || sessionStorage.getItem('smartnest_token');
 const userRaw = localStorage.getItem('smartnest_user') || sessionStorage.getItem('smartnest_user');
