@@ -67,11 +67,48 @@ function renderUsers(list) {
       <td style="color:var(--text-dim);">${u.email}</td>
       <td><span class="role-pill ${u.role}">${u.role}</span></td>
       <td style="color:var(--text-dim);">${new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td>${u.role !== 'admin' ? `<button class="del-btn" data-id="${u._id}" data-name="${u.name || u.email}">Delete</button>` : '<span style="font-size:12px;color:var(--text-dim);">–</span>'}</td>
+      <td style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <select class="role-change-select" data-id="${u._id}" data-name="${u.name||u.email}">
+          <option value="buyer"  ${u.role==='buyer' ?'selected':''}>Buyer</option>
+          <option value="owner"  ${u.role==='owner' ?'selected':''}>Owner</option>
+          <option value="admin"  ${u.role==='admin' ?'selected':''}>Admin</option>
+        </select>
+        ${u._id !== me._id ? `<button class="del-btn" data-id="${u._id}" data-name="${u.name||u.email}">Delete</button>` : '<span style="font-size:11px;color:var(--text-dim);">(you)</span>'}
+      </td>
     </tr>`).join('');
 
   tbody.querySelectorAll('.del-btn').forEach(btn => {
     btn.addEventListener('click', () => openDeleteConfirm(btn.dataset.id, btn.dataset.name));
+  });
+
+  tbody.querySelectorAll('.role-change-select').forEach(sel => {
+    sel.addEventListener('change', async function() {
+      const newRole = this.value;
+      const id     = this.dataset.id;
+      const name   = this.dataset.name;
+      if (!confirm(`Change ${name}'s role to "${newRole}"?`)) {
+        // revert
+        await loadUsers(); return;
+      }
+      try {
+        const res  = await fetch(`${API_BASE}/admin/users/${id}/role`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ role: newRole }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`${name} is now ${newRole}`, 'success');
+          allUsers = allUsers.map(u => u._id === id ? { ...u, role: newRole } : u);
+        } else {
+          showToast(data.message || 'Failed', 'error');
+          await loadUsers();
+        }
+      } catch {
+        showToast('Failed to change role', 'error');
+        await loadUsers();
+      }
+    });
   });
 }
 
