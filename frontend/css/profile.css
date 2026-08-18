@@ -72,3 +72,35 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--paper);color:var(--
 .status.ok{background:var(--ok-dim);color:var(--ok);border:1px solid var(--ok-ln);}
 
 @media(max-width:480px){.page{padding:24px 16px 48px;}.avatar-section{flex-direction:column;text-align:center;}}
+
+/* ── Dark mode ── */
+html[data-theme="dark"] body{background:#0A1928;}
+html[data-theme="dark"] .info-card{background:#0F2236;border-color:#1E3550;}
+html[data-theme="dark"] .info-header{border-color:#1E3550;color:#9FB6C9;}
+html[data-theme="dark"] .info-row{border-color:#1E3550;}
+html[data-theme="dark"] .info-row .il{color:#5A6E82;}
+html[data-theme="dark"] .info-row .iv{color:#E8EEF3;}
+html[data-theme="dark"] .pw-card{background:#0F2236;border-color:#1E3550;}
+html[data-theme="dark"] .pw-header{border-color:#1E3550;color:#9FB6C9;}
+html[data-theme="dark"] .field label{color:#5A6E82;}
+html[data-theme="dark"] .input-shell{background:#162840;border-color:#1E3550;}
+html[data-theme="dark"] .input-shell input{color:#E8EEF3;}
+html[data-theme="dark"] .input-shell input::placeholder{color:#5A6E82;}
+html[data-theme="dark"] .toggle-pw{color:#5A6E82;}
+html[data-theme="dark"] .submit-btn{background:var(--brass);color:#fff;}
+html[data-theme="dark"] .submit-btn:hover{background:#A56F23;}
+
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]) body{background:#0A1928;}
+  html:not([data-theme="light"]) .info-card{background:#0F2236;border-color:#1E3550;}
+  html:not([data-theme="light"]) .info-header{border-color:#1E3550;color:#9FB6C9;}
+  html:not([data-theme="light"]) .info-row{border-color:#1E3550;}
+  html:not([data-theme="light"]) .info-row .il{color:#5A6E82;}
+  html:not([data-theme="light"]) .info-row .iv{color:#E8EEF3;}
+  html:not([data-theme="light"]) .pw-card{background:#0F2236;border-color:#1E3550;}
+  html:not([data-theme="light"]) .pw-header{border-color:#1E3550;color:#9FB6C9;}
+  html:not([data-theme="light"]) .field label{color:#5A6E82;}
+  html:not([data-theme="light"]) .input-shell{background:#162840;border-color:#1E3550;}
+  html:not([data-theme="light"]) .input-shell input{color:#E8EEF3;}
+  html:not([data-theme="light"]) .submit-btn{background:var(--brass);color:#fff;}
+}
