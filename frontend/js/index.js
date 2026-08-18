@@ -41,7 +41,8 @@ window.addEventListener('scroll', () => {
 }, {passive:true});
 
 // Scroll reveal
-const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-scale');
+const REVEAL_CLASSES = '.reveal, .reveal-left, .reveal-right, .reveal-blur, .reveal-rotate, .reveal-fall, .reveal-scale';
+const revealEls = document.querySelectorAll(REVEAL_CLASSES);
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -49,7 +50,7 @@ const observer = new IntersectionObserver((entries) => {
       observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.12 });
+}, { threshold: 0.10, rootMargin: '0px 0px -40px 0px' });
 revealEls.forEach(el => observer.observe(el));
 
 // Number counter animation

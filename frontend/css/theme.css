@@ -34,6 +34,22 @@
 }
 .btn-solid-sm:hover { background: var(--brass-dark); }
 
+/* ── Global Scroll Reveal Animations (all pages) ── */
+.reveal{opacity:0;transform:translateY(48px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-64px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1);}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(64px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1);}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+.reveal-scale{opacity:0;transform:scale(.88);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);}
+.reveal-scale.visible{opacity:1;transform:scale(1);}
+.reveal-blur{opacity:0;filter:blur(14px);transform:translateY(24px);transition:opacity .8s ease,filter .8s ease,transform .8s cubic-bezier(.22,1,.36,1);}
+.reveal-blur.visible{opacity:1;filter:blur(0);transform:translateY(0);}
+.reveal-fall{opacity:0;transform:translateY(-56px) scale(.96);transition:opacity .65s cubic-bezier(.34,1.56,.64,1),transform .65s cubic-bezier(.34,1.56,.64,1);}
+.reveal-fall.visible{opacity:1;transform:translateY(0) scale(1);}
+.d1{transition-delay:.06s!important;}.d2{transition-delay:.16s!important;}.d3{transition-delay:.26s!important;}
+.d4{transition-delay:.36s!important;}.d5{transition-delay:.46s!important;}.d6{transition-delay:.56s!important;}
+
 /* ── Dark Mode: override CSS variables ── */
 html[data-theme="dark"] {
   --paper: #0A1928;

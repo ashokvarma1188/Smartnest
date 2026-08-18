@@ -64,6 +64,11 @@
       </div>
     </div>
   </div>
+  <!-- Scroll down hint -->
+  <button class="hero-scroll-hint" onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">
+    Scroll
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -72,17 +77,17 @@
   <h2 class="section-title reveal d1">Three steps to your next home</h2>
   <p class="section-sub reveal d2">No agents, no paperwork maze. Just you and the owner.</p>
   <div class="how-grid">
-    <div class="how-card reveal d1" data-n="1">
+    <div class="how-card reveal-left d1" data-n="1">
       <div class="how-icon">📝</div>
       <h3>Create your account</h3>
       <p>Sign up as a Buyer to browse, or as an Owner to list. Takes 30 seconds.</p>
     </div>
-    <div class="how-card reveal d2" data-n="2">
+    <div class="how-card reveal-blur d2" data-n="2">
       <div class="how-icon">🔍</div>
       <h3>Browse & filter</h3>
       <p>Search by location, filter by price range and bedrooms. Save favorites.</p>
     </div>
-    <div class="how-card reveal d3" data-n="3">
+    <div class="how-card reveal-right d3" data-n="3">
       <div class="how-icon">📞</div>
       <h3>Contact the owner</h3>
       <p>Get the owner's direct email — no broker, no commission. Zero cost.</p>
@@ -118,7 +123,7 @@
   </div>
   <div class="reviews-grid">
 
-    <div class="review-card reveal d1">
+    <div class="review-card reveal-fall d1">
       <div class="review-stars">★★★★★</div>
       <p class="review-text">"Found a 2BHK in Hyderabad within a week. Talked directly to the owner, no agent drama. Saved at least ₹40,000 in brokerage."</p>
       <div class="review-author">
@@ -130,7 +135,7 @@
       </div>
     </div>
 
-    <div class="review-card reveal d2">
+    <div class="review-card reveal-fall d2">
       <div class="review-stars">★★★★★</div>
       <p class="review-text">"Listed my apartment and got 3 serious inquiries in 2 days. The chat feature is super convenient — no phone calls from random brokers."</p>
       <div class="review-author">
@@ -142,7 +147,7 @@
       </div>
     </div>
 
-    <div class="review-card reveal d3">
+    <div class="review-card reveal-fall d3">
       <div class="review-stars">★★★★★</div>
       <p class="review-text">"Finally a platform that doesn't charge buyers. I shortlisted 5 properties, saved my favorites, and contacted all owners directly. Brilliant."</p>
       <div class="review-author">
@@ -154,7 +159,7 @@
       </div>
     </div>
 
-    <div class="review-card reveal d4">
+    <div class="review-card reveal-fall d4">
       <div class="review-stars">★★★★★</div>
       <p class="review-text">"Rented out my Vizag flat in 10 days. The platform is clean, simple, and actually works. Best decision to list here instead of going through agents."</p>
       <div class="review-author">
@@ -166,7 +171,7 @@
       </div>
     </div>
 
-    <div class="review-card reveal d5">
+    <div class="review-card reveal-fall d5">
       <div class="review-stars">★★★★★</div>
       <p class="review-text">"The dark mode is a nice touch! But more importantly — zero commission policy is real. Signed the rental agreement directly, saved big."</p>
       <div class="review-author">
@@ -178,7 +183,7 @@
       </div>
     </div>
 
-    <div class="review-card reveal d6">
+    <div class="review-card reveal-fall d6">
       <div class="review-stars">★★★★★</div>
       <p class="review-text">"As a first-time landlord I was nervous, but SmartNest made it easy. Got verified buyers who were serious — not just window shoppers sent by brokers."</p>
       <div class="review-author">
@@ -200,12 +205,12 @@
     <h2 class="section-title reveal d1">Built for India's property market</h2>
   </div>
   <div class="why-grid">
-    <div class="why-item reveal d1"><div class="why-icon">🏠</div><div><h4>Owner-direct listings</h4><p>Every property is posted by the real owner — no broker middlemen.</p></div></div>
-    <div class="why-item reveal d2"><div class="why-icon">📸</div><div><h4>Photo galleries</h4><p>Upload multiple photos so buyers get a full picture before reaching out.</p></div></div>
-    <div class="why-item reveal d3"><div class="why-icon">🔒</div><div><h4>Secure login</h4><p>JWT-based auth with OTP password reset keeps your account safe.</p></div></div>
-    <div class="why-item reveal d4"><div class="why-icon">❤️</div><div><h4>Favorites list</h4><p>Save properties you love. Comes back every time you visit.</p></div></div>
-    <div class="why-item reveal d5"><div class="why-icon">🔍</div><div><h4>Smart filters</h4><p>Filter by price range and bedrooms. Find exactly what fits your budget.</p></div></div>
-    <div class="why-item reveal d6"><div class="why-icon">💰</div><div><h4>100% free</h4><p>No listing fees, no commission, no hidden charges. Ever.</p></div></div>
+    <div class="why-item reveal-left d1"><div class="why-icon">🏠</div><div><h4>Owner-direct listings</h4><p>Every property is posted by the real owner — no broker middlemen.</p></div></div>
+    <div class="why-item reveal-right d2"><div class="why-icon">📸</div><div><h4>Photo galleries</h4><p>Upload multiple photos so buyers get a full picture before reaching out.</p></div></div>
+    <div class="why-item reveal-left d3"><div class="why-icon">🔒</div><div><h4>Secure login</h4><p>JWT-based auth with OTP password reset keeps your account safe.</p></div></div>
+    <div class="why-item reveal-right d4"><div class="why-icon">❤️</div><div><h4>Favorites list</h4><p>Save properties you love. Comes back every time you visit.</p></div></div>
+    <div class="why-item reveal-left d5"><div class="why-icon">🔍</div><div><h4>Smart filters</h4><p>Filter by price range and bedrooms. Find exactly what fits your budget.</p></div></div>
+    <div class="why-item reveal-right d6"><div class="why-icon">💰</div><div><h4>100% free</h4><p>No listing fees, no commission, no hidden charges. Ever.</p></div></div>
   </div>
 </section>
 

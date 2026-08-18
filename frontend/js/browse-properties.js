@@ -109,8 +109,8 @@ function renderCards(list) {
 
   list.forEach((p, i) => {
     const card     = document.createElement('div');
-    card.className = 'prop-card';
-    card.style.animationDelay = `${i * 0.055}s`;
+    card.className = 'prop-card reveal';
+    card.style.transitionDelay = `${i * 0.07}s`;
 
     const imgSrc = p.images && p.images.length > 0 ? p.images[0] : p.image;
     const imgUrl = imgSrc ? `https://smartnest-2zw0.onrender.com${imgSrc}` : null;
@@ -162,6 +162,14 @@ function renderCards(list) {
     });
     grid.appendChild(card);
   });
+
+  // Trigger scroll-reveal on newly rendered cards
+  const revealObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+  grid.querySelectorAll('.reveal').forEach(function(el) { revealObs.observe(el); });
 }
 
 async function loadProperties() {
