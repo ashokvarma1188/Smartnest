@@ -56,7 +56,10 @@ form.addEventListener('submit', async (e) => {
     showStatus("You're in. Redirecting…", "ok");
 
     setTimeout(() => {
-      window.location.href = data.user?.role === 'owner'
+      const role = data.user?.role;
+      window.location.href = role === 'admin'
+        ? 'admin-dashboard.html'
+        : role === 'owner'
         ? 'add-property.html'
         : 'browse-properties.html';
     }, 600);
