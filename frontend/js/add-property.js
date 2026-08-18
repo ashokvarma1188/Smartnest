@@ -203,6 +203,121 @@ async function loadOthersProperties() {
 }
 
 // ── Owner Chats ──
+let ownerSocket   = null;
+let ownerConvId   = null;
+let ownerConvsMap = {};   // convId → full conversation object
+
+function initOwnerSocket() {
+  if (ownerSocket) return;
+  ownerSocket = io('https://smartnest-2zw0.onrender.com', { transports: ['websocket', 'polling'] });
+  ownerSocket.on('receive_message', (msg) => {
+    const senderId = msg.sender && (msg.sender._id || msg.sender);
+    if (user && senderId && senderId.toString() === user._id) return;
+    ownerAppendBubble(msg);
+  });
+}
+
+function ownerBubbleHtml(m) {
+  const senderId = m.sender && (m.sender._id || m.sender);
+  const isMine   = user && senderId && senderId.toString() === user._id;
+  const time     = m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+  const senderName = m.sender && m.sender.name ? m.sender.name : (isMine ? 'You' : 'Buyer');
+  return `<div class="owner-chat-bubble ${isMine ? 'mine' : 'theirs'}">
+    ${m.text}
+    <div class="bubble-meta">${isMine ? '' : senderName + ' · '}${time}</div>
+  </div>`;
+}
+
+function ownerRenderMessages(msgs) {
+  const box = document.getElementById('ownerChatMessages');
+  if (!msgs.length) {
+    box.innerHTML = '<div class="owner-chat-empty"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(78,122,156,0.4)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>No messages yet</div>';
+    return;
+  }
+  box.innerHTML = msgs.map(m => ownerBubbleHtml(m)).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+function ownerAppendBubble(m) {
+  const box   = document.getElementById('ownerChatMessages');
+  const empty = box.querySelector('.owner-chat-empty');
+  if (empty) empty.remove();
+  box.insertAdjacentHTML('beforeend', ownerBubbleHtml(m));
+  box.scrollTop = box.scrollHeight;
+}
+
+function openOwnerChat(conv) {
+  const buyer = conv.buyer || {};
+  const prop  = conv.property || {};
+  ownerConvId = conv._id;
+
+  document.getElementById('ownerChatAvatar').textContent    = (buyer.name || 'B')[0].toUpperCase();
+  document.getElementById('ownerChatBuyerName').textContent = buyer.name || 'Buyer';
+  document.getElementById('ownerChatPropName').textContent  = prop.title || 'Property';
+  document.getElementById('ownerChatMessages').innerHTML    = '<div class="owner-chat-loading">Loading…</div>';
+  document.getElementById('ownerChatOverlay').classList.add('show');
+
+  // Fetch fresh messages
+  fetch(`${API_BASE}/conversations/property/${prop._id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.success) { document.getElementById('ownerChatMessages').innerHTML = '<div class="owner-chat-loading">Could not load messages.</div>'; return; }
+    ownerConvId = data.conversation._id;
+    initOwnerSocket();
+    ownerSocket.emit('join_conversation', ownerConvId);
+    ownerRenderMessages(data.conversation.messages || []);
+  })
+  .catch(() => {
+    document.getElementById('ownerChatMessages').innerHTML = '<div class="owner-chat-loading">Could not load messages.</div>';
+  });
+}
+
+async function sendOwnerMessage() {
+  if (!ownerConvId || !token) return;
+  const input = document.getElementById('ownerChatInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value    = '';
+  input.disabled = true;
+
+  try {
+    const res  = await fetch(`${API_BASE}/conversations/${ownerConvId}/message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      ownerAppendBubble(data.message);
+      ownerSocket.emit('send_message', { conversationId: ownerConvId, message: data.message });
+    } else {
+      showToast('Message not sent', 'error');
+    }
+  } catch {
+    showToast('Failed to send', 'error');
+  } finally {
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+document.getElementById('ownerChatClose').addEventListener('click', () => {
+  document.getElementById('ownerChatOverlay').classList.remove('show');
+  ownerConvId = null;
+});
+document.getElementById('ownerChatOverlay').addEventListener('click', e => {
+  if (e.target.id === 'ownerChatOverlay') {
+    document.getElementById('ownerChatOverlay').classList.remove('show');
+    ownerConvId = null;
+  }
+});
+document.getElementById('ownerChatSend').addEventListener('click', sendOwnerMessage);
+document.getElementById('ownerChatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendOwnerMessage(); }
+});
+
 async function loadOwnerChats() {
   const list  = document.getElementById('chatsList');
   const empty = document.getElementById('chatsLoading');
@@ -223,15 +338,17 @@ async function loadOwnerChats() {
     badge.textContent = convs.length;
     badge.style.display = 'inline-flex';
 
-    list.innerHTML = convs.map(c => {
+    list.innerHTML = convs.map((c, i) => {
       const buyer    = c.buyer    || {};
       const prop     = c.property || {};
       const msgs     = c.messages || [];
       const last     = msgs[msgs.length - 1];
       const lastText = last ? last.text : 'No messages yet';
       const lastTime = last ? new Date(last.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : '';
-      return `<div class="chat-conv-card">
-        <div class="conv-avatar">${(buyer.name || 'B')[0].toUpperCase()}</div>
+      const colors   = ['#C98A35','#4E7A9C','#3DAA6A','#B6493A','#7A5CA8'];
+      const color    = colors[i % colors.length];
+      return `<div class="chat-conv-card" data-idx="${i}">
+        <div class="conv-avatar" style="background:${color};">${(buyer.name || 'B')[0].toUpperCase()}</div>
         <div class="conv-info">
           <div class="conv-buyer">${buyer.name || 'Buyer'}</div>
           <div class="conv-prop">${prop.title || 'Property'}</div>
@@ -240,9 +357,17 @@ async function loadOwnerChats() {
         <div class="conv-meta">
           <div class="conv-time">${lastTime}</div>
           <div class="conv-count">${msgs.length} msg${msgs.length !== 1 ? 's' : ''}</div>
+          <div style="font-size:11px;color:var(--brass);margin-top:4px;font-weight:600;">Open →</div>
         </div>
       </div>`;
     }).join('');
+
+    // Store convs and wire up click handlers
+    convs.forEach((c, i) => {
+      const card = list.querySelector(`[data-idx="${i}"]`);
+      if (card) card.addEventListener('click', () => openOwnerChat(c));
+    });
+
   } catch {
     list.innerHTML = '<div class="chats-loading">Could not load chats.</div>';
   }

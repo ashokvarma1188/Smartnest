@@ -205,6 +205,32 @@
     </div>
   </div>
 
+<!-- OWNER CHAT OVERLAY -->
+<div class="owner-chat-overlay" id="ownerChatOverlay">
+  <div class="owner-chat-panel">
+    <div class="owner-chat-header">
+      <div class="owner-chat-header-info">
+        <div class="owner-chat-avatar" id="ownerChatAvatar">B</div>
+        <div>
+          <div class="owner-chat-buyer-name" id="ownerChatBuyerName">Buyer</div>
+          <div class="owner-chat-prop-name" id="ownerChatPropName">Property</div>
+        </div>
+      </div>
+      <button class="owner-chat-close" id="ownerChatClose">✕</button>
+    </div>
+    <div class="owner-chat-messages" id="ownerChatMessages">
+      <div class="owner-chat-loading">Loading messages…</div>
+    </div>
+    <div class="owner-chat-input-row">
+      <input type="text" id="ownerChatInput" placeholder="Type a reply…" autocomplete="off"/>
+      <button class="owner-chat-send-btn" id="ownerChatSend">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="./js/toast.js"></script>
 <script src="js/add-property.js"></script>
 
