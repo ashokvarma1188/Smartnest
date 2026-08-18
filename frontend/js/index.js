@@ -57,6 +57,21 @@ const statObserver = new IntersectionObserver((entries) => {
 const statsEl = document.querySelector('.hero-stats');
 if (statsEl) statObserver.observe(statsEl);
 
+const PLACEHOLDER_IMAGES = [
+  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=600&h=400&fit=crop&q=80',
+];
+function getPlaceholder(id) {
+  const seed = String(id).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  return PLACEHOLDER_IMAGES[seed % PLACEHOLDER_IMAGES.length];
+}
+
 // Load featured properties
 (async function () {
   try {
@@ -73,14 +88,15 @@ if (statsEl) statObserver.observe(statsEl);
     }
 
     grid.innerHTML = list.map((p, i) => {
-      const imgUrl = p.image ? API.replace('/api','') + p.image : null;
+      const pid = p._id;
+      const imgUrl = p.image ? API.replace('/api','') + p.image : getPlaceholder(pid);
       const chips = [
         p.bedrooms ? '🛏 ' + p.bedrooms + ' Bed' : '',
         p.area ? '📐 ' + p.area + ' sq.ft' : ''
       ].filter(Boolean);
       return `<a class="prop-card reveal" style="transition-delay:${i*0.1}s" href="property-detail.html?id=${p._id}">
         <div class="prop-media">
-          ${imgUrl ? `<img src="${imgUrl}" alt="${p.title}" loading="lazy"/>` : '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(78,122,156,0.4)" stroke-width="1.4"><path d="M3 11L12 4l9 7M5 10v10h14V10"/></svg>'}
+          <img src="${imgUrl}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src='${getPlaceholder(pid)}'"/>
           <span class="prop-badge">Active</span>
         </div>
         <div class="prop-body">
