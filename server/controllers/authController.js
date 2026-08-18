@@ -243,12 +243,44 @@ const verifyOtp = async (req, res) => {
 };
 // ✦ END NEW ─────────────────────────────────────────────────
 
+// Setup Admin — promotes the currently logged-in user to admin role
+const setupAdmin = async (req, res) => {
+  try {
+    const { secret } = req.body;
+    if (secret !== process.env.ADMIN_SETUP_SECRET) {
+      return res.status(403).json({ success: false, message: "Invalid secret." });
+    }
+
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: "No token provided." });
+    }
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findByIdAndUpdate(
+      decoded.id,
+      { role: "admin" },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+
+    res.status(200).json({ success: true, message: `${user.name} is now an admin`, user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   resetPassword,
-  sendOtp,    // ✦ NEW
-  verifyOtp,  // ✦ NEW
+  sendOtp,
+  verifyOtp,
+  setupAdmin,
 };
 
 
