@@ -49,7 +49,10 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    // Allow login with email OR username (name field)
+    const user = await User.findOne({
+      $or: [{ email: email }, { name: email }]
+    });
 
     if (!user) {
       return res.status(400).json({
