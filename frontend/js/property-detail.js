@@ -33,11 +33,11 @@ function renderPage(p) {
 
   const galHtml = images.length ? `
     <div class="gal-main" id="galMain">
-      ${images.map((img, i) => `<img src="${API_ROOT}${img}" alt="${p.title}" loading="lazy" class="${i===0?'active':''}" data-idx="${i}"/>`).join('')}
+      ${images.map((img, i) => `<img src="${API_ROOT}${img}" alt="${p.title}" loading="lazy" class="${i===0?'active':''}" data-idx="${i}" onerror="this.onerror=null;this.src='${getPlaceholder(p._id)}'"/>`).join('')}
       ${images.length > 1 ? `<button class="gal-arrow gal-prev" id="galPrev">&#8249;</button><button class="gal-arrow gal-next" id="galNext">&#8250;</button>` : ''}
       ${images.length > 1 ? `<div class="gal-counter" id="galCounter">1 / ${images.length}</div>` : ''}
     </div>
-    ${images.length > 1 ? `<div class="gal-thumbs">${images.map((img,i) => `<img class="gal-thumb ${i===0?'active':''}" src="${API_ROOT}${img}" data-idx="${i}" alt=""/>`).join('')}</div>` : ''}
+    ${images.length > 1 ? `<div class="gal-thumbs">${images.map((img,i) => `<img class="gal-thumb ${i===0?'active':''}" src="${API_ROOT}${img}" data-idx="${i}" alt="" onerror="this.onerror=null;this.src='${getPlaceholder(p._id)}'"/>`).join('')}</div>` : ''}
   ` : `
     <div class="gal-main">
       <img src="${getPlaceholder(p._id)}" alt="${p.title}" class="active"
