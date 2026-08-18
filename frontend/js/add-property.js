@@ -213,7 +213,20 @@ function initOwnerSocket() {
   ownerSocket.on('receive_message', (msg) => {
     const senderId = msg.sender && (msg.sender._id || msg.sender);
     if (user && senderId && senderId.toString() === user._id) return;
-    ownerAppendBubble(msg);
+
+    const msgConvId  = msg.conversationId;
+    const chatOpen   = document.getElementById('ownerChatOverlay').classList.contains('show');
+    const isThisChat = chatOpen && ownerConvId && ownerConvId.toString() === msgConvId;
+
+    if (isThisChat) {
+      ownerAppendBubble(msg);
+    } else {
+      const senderName = (msg.sender && msg.sender.name) ? msg.sender.name : 'Buyer';
+      const conv = ownerConvsMap[msgConvId];
+      showMsgNotification(senderName, msg.text, function() {
+        if (conv) openOwnerChat(conv);
+      });
+    }
   });
 }
 
@@ -362,8 +375,11 @@ async function loadOwnerChats() {
       </div>`;
     }).join('');
 
-    // Store convs and wire up click handlers
+    // Store convs, join all Socket.IO rooms, wire up click handlers
+    initOwnerSocket();
     convs.forEach((c, i) => {
+      ownerConvsMap[c._id] = c;
+      ownerSocket.emit('join_conversation', c._id);
       const card = list.querySelector(`[data-idx="${i}"]`);
       if (card) card.addEventListener('click', () => openOwnerChat(c));
     });

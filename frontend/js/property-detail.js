@@ -190,10 +190,18 @@ function initSocket() {
   if (socket) return;
   socket = io('https://smartnest-2zw0.onrender.com', { transports: ['websocket', 'polling'] });
   socket.on('receive_message', (msg) => {
-    // Only render if the message came from the OTHER person (not echoed from ourselves)
     const senderId = msg.sender && (msg.sender._id || msg.sender);
     if (me && senderId && senderId.toString() === me._id) return;
-    appendBubble(msg);
+
+    const chatOpen = document.getElementById('chatOverlay').classList.contains('show');
+    if (chatOpen) {
+      appendBubble(msg);
+    } else {
+      const senderName = (msg.sender && msg.sender.name) ? msg.sender.name : 'Owner';
+      showMsgNotification(senderName, msg.text, function() {
+        document.getElementById('chatOverlay').classList.add('show');
+      });
+    }
   });
 }
 

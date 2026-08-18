@@ -57,9 +57,9 @@ io.on("connection", (socket) => {
     socket.join(conversationId);
   });
 
-  // Broadcast new message to everyone in the room
+  // Broadcast new message to everyone in the room (include conversationId for notifications)
   socket.on("send_message", ({ conversationId, message }) => {
-    io.to(conversationId).emit("receive_message", message);
+    io.to(conversationId).emit("receive_message", { ...message, conversationId });
   });
 
   socket.on("disconnect", () => {});
